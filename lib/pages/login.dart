@@ -24,25 +24,25 @@ import '../utils/strings.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
-  final bool showAlert;
-  final String alertText;
-  const LoginPage({Key key, this.showAlert, this.alertText}) : super(key: key);
+  final bool? showAlert;
+  final String? alertText;
+  const LoginPage({Key? key, this.showAlert, this.alertText}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  DeviceState deviceState;
+  late DeviceState deviceState;
   final formLoginKey = GlobalKey<FormState>();
   final FocusNode focusPassword = FocusNode();
   final TextEditingController _usernameText = TextEditingController();
   final TextEditingController _passwordText = TextEditingController();
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   bool isLoading = false;
-  bool rememberMe = false;
-  double height, width;
-  String deviceInfo,
+  bool? rememberMe = false;
+  double? height, width;
+  String? deviceInfo,
       heightScreen,
       widthScreen,
       _companyCode,
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     Future.delayed(Duration.zero, () async {
       prefs = await SharedPreferences.getInstance();
       rememberMe = prefs.getBool("remember_me") ?? false;
-      if (rememberMe) {
+      if (rememberMe!) {
         _usernameText.text = prefs.getString("username") ?? "";
         _passwordText.text = prefs.getString("password") ?? "";
       }
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> initPage() async {
-    if (widget.showAlert) {
+    if (widget.showAlert!) {
       Flushbar(
         margin: const EdgeInsets.all(8),
         borderRadius: BorderRadius.circular(8),
@@ -116,21 +116,21 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       Uri uri;
       if (secure) {
-        uri = Uri.https(_host, _prefix + UIUrl.login);
+        uri = Uri.https(_host!, _prefix! + UIUrl.login);
       } else {
-        uri = Uri.http(_host, _prefix + UIUrl.login);
+        uri = Uri.http(_host!, _prefix! + UIUrl.login);
       }
       _password = UIFunction.encodeStringBase64URL(_passwordText.text);
-      var passwordv2 = _password.replaceAll("=", "");
+      var passwordv2 = _password!.replaceAll("=", "");
       passwordv2 = passwordv2.replaceAll("+", "-");
       passwordv2 = passwordv2.replaceAll("/", "_");
       _planText = _usernameText.text +
           passwordv2 +
-          _companyCode +
-          _deviceId +
-          _companyCode +
-          _deviceId;
-      _secretKey = UIFunction.encodeSha1(_planText);
+          _companyCode! +
+          _deviceId! +
+          _companyCode! +
+          _deviceId!;
+      _secretKey = UIFunction.encodeSha1(_planText!);
       _parameters = json.encode([
         _usernameText.text,
         passwordv2,
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
         _deviceId,
         _secretKey,
       ]);
-      log(_parameters);
+      log(_parameters!);
       UIFunction.showDialogLoadingBlank(context: context);
       ResponseAPI result = await UIFunction.callAPIDIO(
         method: 'POST',
@@ -158,13 +158,13 @@ class _LoginPageState extends State<LoginPage> {
             companyCode: _companyCode,
             host: _host,
           );
-          prefs.setString("token", auth.token);
-          prefs.setString("username", auth.username);
-          prefs.setBool("remember_me", rememberMe);
-          if (rememberMe) {
+          prefs.setString("token", auth.token!);
+          prefs.setString("username", auth.username!);
+          prefs.setBool("remember_me", rememberMe!);
+          if (rememberMe!) {
             prefs.setString("password", _passwordText.text);
           }
-          prefs.setString("employee_name", auth.employeeName);
+          prefs.setString("employee_name", auth.employeeName!);
           prefs.setString("photo_profile", auth.photoProfile ?? "");
           deviceState.setMyAuth(data: auth);
           deviceState.setMyOffice(data: UIData.dummyOffice);
@@ -232,16 +232,16 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(top: width * 0.2),
+                        padding: EdgeInsets.only(top: width! * 0.2),
                         child: SvgPicture.asset(
                           UIImage.logo,
-                          width: width * 0.2,
-                          height: width * 0.2,
+                          width: width! * 0.2,
+                          height: width! * 0.2,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                            top: width * 0.1, bottom: width * 0.05),
+                            top: width! * 0.1, bottom: width! * 0.05),
                         child: const Text(
                           UIString.appName,
                           textAlign: TextAlign.center,
@@ -261,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                                   maxLines: 1,
                                   controller: _usernameText,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return UIString.usernameRequired;
                                     } else {
                                       return null;
@@ -283,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _passwordText,
                                   focusNode: focusPassword,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return UIString.passwordRequired;
                                     } else {
                                       return null;
@@ -303,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    rememberMe = !rememberMe;
+                                    rememberMe = !rememberMe!;
                                     setState(() {});
                                   },
                                   child: Transform(
@@ -313,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
                                       children: [
                                         Checkbox(
                                             value: rememberMe,
-                                            onChanged: (bool val) {
+                                            onChanged: (bool? val) {
                                               rememberMe = val;
                                               setState(() {});
                                             }),
@@ -346,7 +346,7 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         ElevatedButton(
           onPressed: () async {
-            if (formLoginKey.currentState.validate()) {
+            if (formLoginKey.currentState!.validate()) {
               FocusScope.of(context).requestFocus(FocusNode());
               await callAPI();
             }
@@ -374,7 +374,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.white,
                   ),
                   title: 'Information',
-                  message: result,
+                  message: result as String?,
                 ).show(context);
               }
             },
@@ -404,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.white,
                               ),
                               title: 'Information',
-                              message: result,
+                              message: result as String?,
                             ).show(context);
                           }
                         },

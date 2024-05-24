@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class ErrorNoData extends StatefulWidget {
-  final void Function() callBack;
+  final void Function()? callBack;
   const ErrorNoData({
-    Key key,
+    Key? key,
     this.callBack,
   }) : super(key: key);
 
@@ -31,11 +31,11 @@ class _ErrorNoDataState extends State<ErrorNoData> {
             child: ElevatedButton(
               onPressed: () {
                 log("reload");
-                widget.callBack();
+                widget.callBack!();
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: Theme.of(context).primaryColor.withAlpha(50),
+                primary: Theme.of(context).primaryColor.withAlpha(50),
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(20),
@@ -51,7 +51,7 @@ class _ErrorNoDataState extends State<ErrorNoData> {
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize:
-                      Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+                      Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),

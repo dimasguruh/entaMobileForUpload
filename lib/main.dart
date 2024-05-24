@@ -57,7 +57,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,23 +70,23 @@ class MyApp extends StatelessWidget {
       title: 'Enta Mobile',
       onGenerateRoute: (settings) {
         if (settings.name == SplashPage.routeName) {
-          final GeneralArgs args = settings.arguments;
+          final GeneralArgs? args = settings.arguments as GeneralArgs?;
           return MaterialPageRoute(
             settings: const RouteSettings(name: SplashPage.routeName),
             builder: (context) {
               return SplashPage(
-                showAlert: args.showAlert ?? false,
+                showAlert: args!.showAlert ?? false,
                 alertText: args.alertText ?? "",
               );
             },
           );
         } else if (settings.name == LoginPage.routeName) {
-          final GeneralArgs args = settings.arguments;
+          final GeneralArgs? args = settings.arguments as GeneralArgs?;
           return MaterialPageRoute(
             settings: const RouteSettings(name: LoginPage.routeName),
             builder: (context) {
               return LoginPage(
-                showAlert: args.showAlert ?? false,
+                showAlert: args!.showAlert ?? false,
                 alertText: args.alertText,
               );
             },
@@ -99,12 +99,12 @@ class MyApp extends StatelessWidget {
             },
           );
         } else if (settings.name == MainPage.routeName) {
-          final GeneralArgs args = settings.arguments;
+          final GeneralArgs? args = settings.arguments as GeneralArgs?;
           return MaterialPageRoute(
             settings: const RouteSettings(name: MainPage.routeName),
             builder: (context) {
               return MainPage(
-                showAlert: args.showAlert ?? false,
+                showAlert: args!.showAlert ?? false,
                 alertText: args.alertText ?? "",
               );
             },
@@ -138,12 +138,12 @@ class MyApp extends StatelessWidget {
             },
           );
         } else if (settings.name == TapInOutPage.routeName) {
-          final GeneralArgs args = settings.arguments;
+          final GeneralArgs? args = settings.arguments as GeneralArgs?;
           return MaterialPageRoute(
             settings: const RouteSettings(name: TapInOutPage.routeName),
             builder: (context) {
               return TapInOutPage(
-                key: args.key,
+                key: args!.key,
                 title: args.title,
                 url: args.url,
                 type: args.type,
@@ -186,13 +186,13 @@ class MyApp extends StatelessWidget {
             },
           );
         } else if (settings.name == ClockingHistoryDetailPage.routeName) {
-          final GeneralArgs args = settings.arguments;
+          final GeneralArgs? args = settings.arguments as GeneralArgs?;
           return MaterialPageRoute(
             settings:
                 const RouteSettings(name: ClockingHistoryDetailPage.routeName),
             builder: (context) {
               return ClockingHistoryDetailPage(
-                data: args.clocking,
+                data: args!.clocking,
               );
             },
           );

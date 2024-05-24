@@ -1,6 +1,6 @@
 class ResponseAPI {
   bool success;
-  int code;
+  int? code;
   String message;
   dynamic data;
   ResponseAPI(

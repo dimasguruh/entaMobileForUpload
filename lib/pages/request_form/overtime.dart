@@ -36,27 +36,27 @@ import '../login.dart';
 
 class OvertimeRequestPage extends StatefulWidget {
   static const routeName = '/request-form/overtime';
-  const OvertimeRequestPage({Key key}) : super(key: key);
+  const OvertimeRequestPage({Key? key}) : super(key: key);
 
   @override
   State<OvertimeRequestPage> createState() => _OvertimeRequestPageState();
 }
 
 class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
-  DateTimeRange selectedSchedule;
+  DateTimeRange? selectedSchedule;
   final TextEditingController requestTypeText = TextEditingController();
   final TextEditingController scheduleText = TextEditingController();
   final TextEditingController remarksText = TextEditingController();
   final formScheduleKey = GlobalKey<FormState>();
-  File attachFile;
-  String attachFileName, attachFileSize = "0kb", attachFileExt;
-  String attachIcon;
-  Color attachColor;
+  File? attachFile;
+  String? attachFileName, attachFileSize = "0kb", attachFileExt;
+  late String attachIcon;
+  Color? attachColor;
   int currentStep = 0;
-  double height, width;
-  DeviceState deviceState;
-  RequestState requestState;
-  SharedPreferences prefs;
+  double? height, width;
+  late DeviceState deviceState;
+  late RequestState requestState;
+  late SharedPreferences prefs;
   @override
   void initState() {
     super.initState();
@@ -72,7 +72,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
             employeeId: deviceState.employeeId,
             name: deviceState.employeeName,
             isSelected: true,
-            photoUrl: deviceState.myAuth.photoProfile,
+            photoUrl: deviceState.myAuth!.photoProfile,
           ),
         ),
       );
@@ -117,31 +117,31 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
     setState(() {});
   }
 
-  Future<void> getShiftSchedule({DateTime start, DateTime end}) async {
+  Future<void> getShiftSchedule({required DateTime start, required DateTime end}) async {
     Uri uriShiftSchedule;
-    if (prefs.getBool("secure")) {
-      uriShiftSchedule = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.shiftSchedule);
+    if (prefs.getBool("secure")!) {
+      uriShiftSchedule = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.shiftSchedule);
     } else {
-      uriShiftSchedule = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.shiftSchedule);
+      uriShiftSchedule = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.shiftSchedule);
     }
     String planText = "";
-    planText = prefs.getString("username") +
+    planText = prefs.getString("username")! +
         DateFormat('yyyy-MM-dd', 'id').format(start) +
         DateFormat('yyyy-MM-dd', 'id').format(end) +
         json.encode([deviceState.employeeId]) +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     var parameters = json.encode([
       prefs.getString("username"),
       DateFormat('yyyy-MM-dd', 'id').format(start),
       DateFormat('yyyy-MM-dd', 'id').format(end),
       [deviceState.employeeId],
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -150,7 +150,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
     ResponseAPI result = await deviceState.actionCallAPI(
       method: 'POST',
       uri: uriShiftSchedule,
-      prefix: prefs.getString("prefix"),
+      prefix: prefs.getString("prefix")!,
       formData: parameters,
     );
     Navigator.pop(context);
@@ -171,17 +171,17 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
   Future<void> callAPI() async {
     FocusScope.of(context).requestFocus(FocusNode());
     List<DateTime> dateList = UIFunction.getDaysInBetween(
-      startDate: requestState.overTimeRequest.startDate,
-      endDate: requestState.overTimeRequest.endDate,
+      startDate: requestState.overTimeRequest.startDate!,
+      endDate: requestState.overTimeRequest.endDate!,
     );
 
     List employeeList = [];
-    for (var a in requestState.overTimeRequest.employeeList) {
+    for (var a in requestState.overTimeRequest.employeeList!) {
       List data = [];
       List otList = [];
       for (var e in dateList) {
-        var search = a.date
-            .firstWhere((element) => element.date == e, orElse: () => null);
+        var search = a!.date!
+            .firstWhere((element) => element!.date == e, orElse: () => null);
         if (search != null) {
           if (search.afterIn == null &&
               search.afterOut == null &&
@@ -191,17 +191,17 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
           } else {
             List detail = [];
             ShiftScheduleModel detailShiftSchedule = deviceState
-                .getDetailSchedule(date: e, employeeId: a.employee.employeeId);
-            detail.add(DateFormat('yyyy-MM-dd', 'id').format(search.date));
-            detail.add(detailShiftSchedule.id.toString() ?? "");
+                .getDetailSchedule(date: e, employeeId: a.employee!.employeeId)!;
+            detail.add(DateFormat('yyyy-MM-dd', 'id').format(search.date!));
+            detail.add(detailShiftSchedule.id.toString());
             // BEFORE
             if (search.beforeIn != null && search.beforeOut != null) {
               detail
-                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.beforeIn));
-              detail.add(DateFormat('HH:mm', 'id').format(search.beforeIn));
+                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.beforeIn!));
+              detail.add(DateFormat('HH:mm', 'id').format(search.beforeIn!));
               detail
-                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.beforeOut));
-              detail.add(DateFormat('HH:mm', 'id').format(search.beforeOut));
+                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.beforeOut!));
+              detail.add(DateFormat('HH:mm', 'id').format(search.beforeOut!));
             } else {
               detail.add("");
               detail.add("");
@@ -211,11 +211,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
 
             // AFTER
             if (search.afterIn != null && search.afterOut != null) {
-              detail.add(DateFormat('yyyy-MM-dd', 'id').format(search.afterIn));
-              detail.add(DateFormat('HH:mm', 'id').format(search.afterIn));
+              detail.add(DateFormat('yyyy-MM-dd', 'id').format(search.afterIn!));
+              detail.add(DateFormat('HH:mm', 'id').format(search.afterIn!));
               detail
-                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.afterOut));
-              detail.add(DateFormat('HH:mm', 'id').format(search.afterOut));
+                  .add(DateFormat('yyyy-MM-dd', 'id').format(search.afterOut!));
+              detail.add(DateFormat('HH:mm', 'id').format(search.afterOut!));
             } else {
               detail.add("");
               detail.add("");
@@ -226,48 +226,48 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
           }
         }
       }
-      data.add(a.employee.employeeId);
+      data.add(a!.employee!.employeeId);
       data.add(otList);
       employeeList.add(data);
     }
 
     // ignore: prefer_interpolation_to_compose_strings
-    String planText = prefs.getString("username") +
+    String planText = prefs.getString("username")! +
         DateFormat('yyyy-MM-dd', 'id')
-            .format(requestState.overTimeRequest.startDate) +
+            .format(requestState.overTimeRequest.startDate!) +
         DateFormat('yyyy-MM-dd', 'id')
-            .format(requestState.overTimeRequest.endDate) +
+            .format(requestState.overTimeRequest.endDate!) +
         'SELF' +
         remarksText.text +
         json.encode(employeeList[0]) +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
 
     String secretKey = UIFunction.encodeSha1(planText);
 
     String parameters = json.encode([
       prefs.getString("username"),
       DateFormat('yyyy-MM-dd', 'id')
-          .format(requestState.overTimeRequest.startDate),
+          .format(requestState.overTimeRequest.startDate!),
       DateFormat('yyyy-MM-dd', 'id')
-          .format(requestState.overTimeRequest.endDate),
+          .format(requestState.overTimeRequest.endDate!),
       'SELF',
       remarksText.text,
       employeeList[0],
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
     log("Parameter Overtime Request $parameters");
     Uri urlSubmit;
-    if (prefs.getBool("secure")) {
-      urlSubmit = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.overtimeSubmit);
+    if (prefs.getBool("secure")!) {
+      urlSubmit = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.overtimeSubmit);
     } else {
-      urlSubmit = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.overtimeSubmit);
+      urlSubmit = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.overtimeSubmit);
     }
     UIFunction.showDialogLoadingBlank(context: context);
     ResponseAPI result = await UIFunction.callAPIDIO(
@@ -317,7 +317,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.75),
+        constraints: BoxConstraints(maxHeight: height! * 0.75),
         child: const EmployeeModal(type: 0),
       ),
     );
@@ -327,25 +327,25 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
   }
 
   Future<void> showModalOverTime({
-    DateTime date,
-    OvertimeEmployeeRequestModel employee,
+    DateTime? date,
+    required OvertimeEmployeeRequestModel employee,
   }) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    OvertimeDateRequestModel searchItem;
-    var x = requestState.overTimeRequest.employeeList
-        .indexWhere((e) => e.id == employee.id);
+    OvertimeDateRequestModel? searchItem;
+    var x = requestState.overTimeRequest.employeeList!
+        .indexWhere((e) => e!.id == employee.id);
     if (x >= 0) {
-      searchItem = requestState.overTimeRequest.employeeList[x].date
-          .firstWhere((e) => e.date == date, orElse: () => null);
+      searchItem = requestState.overTimeRequest.employeeList![x]!.date!
+          .firstWhere((e) => e!.date == date, orElse: () => null);
     }
-    ShiftScheduleModel detailShiftSchedule = deviceState.getDetailSchedule(
-        date: date, employeeId: employee.employee.employeeId);
-    OvertimeDateRequestModel result = await showMaterialModalBottomSheet(
+    ShiftScheduleModel? detailShiftSchedule = deviceState.getDetailSchedule(
+        date: date, employeeId: employee.employee!.employeeId);
+    OvertimeDateRequestModel? result = await showMaterialModalBottomSheet(
       context: context,
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.75),
+        constraints: BoxConstraints(maxHeight: height! * 0.75),
         child: OvertimeModal(
           date: date,
           employee: employee,
@@ -363,16 +363,16 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
   }
 
   Future<void> dateTimeRangePicker() async {
-    DateTimeRange picked = await showDateRangePicker(
+    DateTimeRange? picked = await showDateRangePicker(
       context: context,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             brightness: Brightness.light,
             colorScheme:
                 ColorScheme.light(primary: Theme.of(context).primaryColor),
           ),
-          child: child,
+          child: child!,
         );
       },
       firstDate: DateTime(DateTime.now().month - 2),
@@ -395,11 +395,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
     setState(() {});
   }
 
-  Future<TimeOfDay> timePicker({TimeOfDay initialTime}) {
+  Future<TimeOfDay?> timePicker({required TimeOfDay initialTime}) {
     return showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             primaryColor: Theme.of(context).primaryColor,
@@ -409,7 +409,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
           ),
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-            child: child,
+            child: child!,
           ),
         );
       },
@@ -417,13 +417,13 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
   }
 
   Future<void> onPickFile() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
-      attachFile = File(result.files.single.path);
-      attachFileSize = UIFunction.fileSize(await attachFile.length());
-      attachFileName = p.basenameWithoutExtension(attachFile.path);
-      attachFileExt = p.extension(attachFile.path);
-      int x = await attachFile.length();
+      attachFile = File(result.files.single.path!);
+      attachFileSize = UIFunction.fileSize(await attachFile!.length());
+      attachFileName = p.basenameWithoutExtension(attachFile!.path);
+      attachFileExt = p.extension(attachFile!.path);
+      int x = await attachFile!.length();
       // 5242880
       if (x > deviceState.maxSizeFile) {
         attachFile = null;
@@ -574,11 +574,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
           height: 45.0,
         ),
         title: Text(
-          attachFileName,
+          attachFileName!,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(attachFileSize),
+        subtitle: Text(attachFileSize!),
         trailing: IconButton(
             icon: const Icon(Icons.delete),
             color: Colors.red,
@@ -612,7 +612,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
       icon: Icon(
         Icons.file_upload_rounded,
         color: Colors.white,
-        size: Theme.of(context).primaryTextTheme.headline6.fontSize - 1,
+        size: Theme.of(context).primaryTextTheme.headline6!.fontSize! - 1,
       ),
       label: const Text(
         "Choose file",
@@ -623,11 +623,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
     );
   }
 
-  Widget actionButton({String code, String title, Color color}) {
+  Widget actionButton({String? code, required String title, Color? color}) {
     return ElevatedButton(
       onPressed: () {
         if (code == "SCHEDULE") {
-          if (formScheduleKey.currentState.validate()) {
+          if (formScheduleKey.currentState!.validate()) {
             next();
           } else {
             log("please fill the field blank");
@@ -642,14 +642,14 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
           // confirmSubmit(state: 0);
         }
       },
-      style: ElevatedButton.styleFrom(backgroundColor: color),
+      style: ElevatedButton.styleFrom(primary: color),
       child: Text(title),
     );
   }
 
   Widget buildSchedule() {
     return SizedBox(
-      height: height * 0.73,
+      height: height! * 0.73,
       child: Form(
         key: formScheduleKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -668,7 +668,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize:
-                            Theme.of(context).primaryTextTheme.caption.fontSize,
+                            Theme.of(context).primaryTextTheme.caption!.fontSize,
                       ),
                     ),
                     Padding(
@@ -687,7 +687,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                             maxLines: 1,
                             controller: scheduleText,
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Schedule is required';
                               } else {
                                 return null;
@@ -713,7 +713,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                   Visibility(
                     visible: requestState.overTimeRequest.type == null
                         ? false
-                        : requestState.overTimeRequest.type.id == 2
+                        : requestState.overTimeRequest.type!.id == 2
                             ? true
                             : false,
                     child: ElevatedButton.icon(
@@ -724,11 +724,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                       label: const Text("Add Employee"),
                     ),
                   ),
-                  for (var i in requestState.overTimeRequest.employeeList)
+                  for (var i in requestState.overTimeRequest.employeeList!)
                     Visibility(
                       visible: requestState.overTimeRequest.type == null
                           ? false
-                          : requestState.overTimeRequest.type.id == 2
+                          : requestState.overTimeRequest.type!.id == 2
                               ? true
                               : false,
                       child: ListTile(
@@ -736,25 +736,25 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                         horizontalTitleGap: 2,
                         contentPadding: const EdgeInsets.all(0),
                         leading: AvatarWidget(
-                          url: i.employee.photoUrl,
+                          url: i!.employee!.photoUrl,
                           width: 30,
                           height: 30,
                         ),
                         title: Text(
-                          i.employee.employeeId.toString(),
+                          i.employee!.employeeId.toString(),
                           style: TextStyle(
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .subtitle1
+                                .subtitle1!
                                 .fontSize,
                           ),
                         ),
                         subtitle: Text(
-                          i.employee.name,
+                          i.employee!.name!,
                           style: TextStyle(
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .subtitle2
+                                .subtitle2!
                                 .fontSize,
                           ),
                         ),
@@ -784,7 +784,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize:
-                            Theme.of(context).primaryTextTheme.caption.fontSize,
+                            Theme.of(context).primaryTextTheme.caption!.fontSize,
                       ),
                     ),
                     Padding(
@@ -841,11 +841,11 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
         child: Text("Please setup the schedule"),
       );
     } else {
-      if (requestState.overTimeRequest.type.id == 1 &&
+      if (requestState.overTimeRequest.type!.id == 1 &&
           requestState.overTimeRequest.startDate != null &&
-          requestState.overTimeRequest.employeeList.isNotEmpty) {
+          requestState.overTimeRequest.employeeList!.isNotEmpty) {
         return SizedBox(
-          height: height * 0.73,
+          height: height! * 0.73,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -854,7 +854,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                 child: Column(
                   children: [
                     buildListSchedule(
-                      employee: requestState.overTimeRequest.employeeList[0],
+                      employee: requestState.overTimeRequest.employeeList![0],
                     ),
                   ],
                 ),
@@ -870,13 +870,13 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
     }
   }
 
-  Widget buildListSchedule({OvertimeEmployeeRequestModel employee}) {
+  Widget buildListSchedule({OvertimeEmployeeRequestModel? employee}) {
     return ListView.separated(
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: requestState.overTimeRequest.endDate
-              .difference(requestState.overTimeRequest.startDate)
+      itemCount: requestState.overTimeRequest.endDate!
+              .difference(requestState.overTimeRequest.startDate!)
               .inDays +
           1,
       separatorBuilder: (context, i) {
@@ -885,13 +885,13 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
         );
       },
       itemBuilder: (context, i) {
-        String shiftInfo = deviceState.getInfoSchedule(
-            date: requestState.overTimeRequest.startDate.add(Duration(days: i)),
-            employeeId: employee.employee.employeeId);
-        OvertimeDateRequestModel detailRequest;
-        int totalOTBefore, totalOTAfter;
+        String? shiftInfo = deviceState.getInfoSchedule(
+            date: requestState.overTimeRequest.startDate!.add(Duration(days: i)),
+            employeeId: employee!.employee!.employeeId);
+        OvertimeDateRequestModel? detailRequest;
+        int? totalOTBefore, totalOTAfter;
         bool checkRequestDate = requestState.checkOvertimeRequestEmployeeDate(
-          date: requestState.overTimeRequest.startDate.add(
+          date: requestState.overTimeRequest.startDate!.add(
             Duration(days: i),
           ),
           data: employee,
@@ -899,19 +899,19 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
 
         if (checkRequestDate) {
           detailRequest = requestState.detailOvertimeRequestEmployeeDate(
-              date: requestState.overTimeRequest.startDate.add(
+              date: requestState.overTimeRequest.startDate!.add(
                 Duration(days: i),
               ),
               data: employee);
           if (detailRequest != null) {
             if (detailRequest.beforeIn != null) {
               totalOTBefore = Jiffy(detailRequest.beforeOut)
-                  .diff(Jiffy(detailRequest.beforeIn), Units.MINUTE);
+                  .diff(Jiffy(detailRequest.beforeIn), Units.MINUTE) as int?;
             }
 
             if (detailRequest.afterIn != null) {
               totalOTAfter = Jiffy(detailRequest.afterOut)
-                  .diff(Jiffy(detailRequest.afterIn), Units.MINUTE);
+                  .diff(Jiffy(detailRequest.afterIn), Units.MINUTE) as int?;
             }
           }
         }
@@ -924,7 +924,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
             if (shiftInfo != null) {
               showModalOverTime(
                 employee: employee,
-                date: requestState.overTimeRequest.startDate.add(
+                date: requestState.overTimeRequest.startDate!.add(
                   Duration(days: i),
                 ),
               );
@@ -935,18 +935,18 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                   position: 'TOP',
                   title: 'Ooops',
                   message:
-                      'Shift Schedule on ${DateFormat('dd MMM yyyy', 'id').format(requestState.overTimeRequest.startDate.add(Duration(days: i)))} not found');
+                      'Shift Schedule on ${DateFormat('dd MMM yyyy', 'id').format(requestState.overTimeRequest.startDate!.add(Duration(days: i)))} not found');
             }
           },
           horizontalTitleGap: 1,
           leading: Checkbox(
               value: checkRequestDate,
-              onChanged: (bool value) {
+              onChanged: (bool? value) {
                 if (shiftInfo != null) {
                   if (totalOTBefore != null || totalOTAfter != null) {
                     requestState.addOvertimeRequestEmployeeDate(
                       data: employee,
-                      date: requestState.overTimeRequest.startDate.add(
+                      date: requestState.overTimeRequest.startDate!.add(
                         Duration(days: i),
                       ),
                     );
@@ -957,7 +957,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
             children: [
               Text(
                 DateFormat('dd MMM yyyy', 'id').format(requestState
-                    .overTimeRequest.startDate
+                    .overTimeRequest.startDate!
                     .add(Duration(days: i))),
               ),
               Padding(
@@ -972,7 +972,7 @@ class _OvertimeRequestPageState extends State<OvertimeRequestPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: shiftInfo != null
                             ? Theme.of(context).primaryColor

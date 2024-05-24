@@ -15,4 +15,6 @@ class UIUrl {
   static const String overtimeHistory = "/OT/History";
   static const String leaveSubmit = "/lv/Submit";
   static const String leaveHistory = "/lv/History";
+
+  static late String history;
 }

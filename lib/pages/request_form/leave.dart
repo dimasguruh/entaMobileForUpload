@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, prefer_interpolation_to_compose_strings
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -36,14 +37,14 @@ import '../login.dart';
 
 class LeaveRequestPage extends StatefulWidget {
   static const routeName = '/request-form/leave';
-  const LeaveRequestPage({Key key}) : super(key: key);
+  const LeaveRequestPage({Key? key}) : super(key: key);
 
   @override
   State<LeaveRequestPage> createState() => _LeaveRequestPageState();
 }
 
 class _LeaveRequestPageState extends State<LeaveRequestPage> {
-  DateTimeRange selectedSchedule;
+  DateTimeRange? selectedSchedule;
   final TextEditingController leaveTypeGroupText = TextEditingController();
   final TextEditingController leaveTypeText = TextEditingController();
   final TextEditingController startDateText = TextEditingController();
@@ -52,20 +53,20 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   final TextEditingController emergencyContactText = TextEditingController();
   DateTime startDate = DateTime.now(), endDate = DateTime.now();
   final formScheduleKey = GlobalKey<FormState>();
-  File attachFile;
-  String attachFileName, attachFileSize = "0kb", attachFileExt;
-  String attachIcon;
-  Color attachColor;
+  File? attachFile;
+  String? attachFileName, attachFileSize = "0kb", attachFileExt;
+  late String attachIcon;
+  Color? attachColor;
   int currentStep = 0;
-  double height, width;
-  DeviceState deviceState;
-  RequestState requestState;
+  double? height, width;
+  late DeviceState deviceState;
+  late RequestState requestState;
   int durationType = 0;
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   bool resetSelected = false;
 
   final durationController = GroupButtonController();
-  GeneralModel selectedLeaveType, selectedLeaveTypeGroup;
+  GeneralModel? selectedLeaveType, selectedLeaveTypeGroup;
   @override
   void initState() {
     super.initState();
@@ -82,7 +83,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
             employeeId: deviceState.employeeId,
             name: deviceState.employeeName,
             isSelected: true,
-            photoUrl: deviceState.myAuth.photoProfile,
+            photoUrl: deviceState.myAuth!.photoProfile,
           ),
         ),
       );
@@ -96,28 +97,28 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
 
   Future<void> getBalance() async {
     Uri uriLeaveBalance;
-    if (prefs.getBool("secure")) {
-      uriLeaveBalance = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveBalance);
+    if (prefs.getBool("secure")!) {
+      uriLeaveBalance = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveBalance);
     } else {
-      uriLeaveBalance = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveBalance);
+      uriLeaveBalance = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveBalance);
     }
-    String planText = prefs.getString("username") +
+    String planText = prefs.getString("username")! +
         deviceState.employeeId.toString() +
         'LEAVE_DETAILS' +
-        selectedLeaveType.id.toString() +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        selectedLeaveType!.id.toString() +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
       deviceState.employeeId.toString(),
       'LEAVE_DETAILS',
-      selectedLeaveType.id.toString(),
-      deviceState.myAuth.companyCode,
+      selectedLeaveType!.id.toString(),
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -125,7 +126,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     await deviceState.actionCallAPI(
         method: 'POST',
         uri: uriLeaveBalance,
-        prefix: prefs.getString("prefix"),
+        prefix: prefs.getString("prefix")!,
         formData: parameters);
   }
 
@@ -167,39 +168,39 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   Future<void> callAPI() async {
     FocusScope.of(context).requestFocus(FocusNode());
     List<DateTime> dateList = UIFunction.getDaysInBetween(
-      startDate: requestState.leaveRequest.startDate,
-      endDate: requestState.leaveRequest.endDate,
+      startDate: requestState.leaveRequest.startDate!,
+      endDate: requestState.leaveRequest.endDate!,
     );
 
     List dateLeaveList = [];
-    for (var a in requestState.leaveRequest.employeeList) {
+    for (var a in requestState.leaveRequest.employeeList!) {
       for (var e in dateList) {
-        var search = a.date
-            .firstWhere((element) => element.date == e, orElse: () => null);
+        var search = a!.date!
+            .firstWhere((element) => element!.date == e, orElse: () => null);
         if (search != null) {
-          dateLeaveList.add(DateFormat('yyyy-MM-dd', 'id').format(search.date));
+          dateLeaveList.add(DateFormat('yyyy-MM-dd', 'id').format(search.date!));
         }
       }
     }
     List attachment = [];
     if (attachFile != null) {
-      String imageBase64 = await UIFunction.encodeImageBase64(attachFile);
+      String imageBase64 = await (UIFunction.encodeImageBase64(attachFile!) as FutureOr<String>);
       attachment.add("$attachFileName$attachFileExt");
       attachment.add(imageBase64);
     }
-    String fullDay = requestState.leaveRequest.durationType.id == 0 ? '1' : '0';
-    String halfDay = requestState.leaveRequest.durationType.id == 1 ? '1' : '0';
+    String fullDay = requestState.leaveRequest.durationType!.id == 0 ? '1' : '0';
+    String halfDay = requestState.leaveRequest.durationType!.id == 1 ? '1' : '0';
     String halfDay2 =
-        requestState.leaveRequest.durationType.id == 2 ? '1' : '0';
-    String planText = prefs.getString("username") +
-        selectedLeaveTypeGroup.id.toString() +
-        selectedLeaveType.id.toString() +
+        requestState.leaveRequest.durationType!.id == 2 ? '1' : '0';
+    String planText = prefs.getString("username")! +
+        selectedLeaveTypeGroup!.id.toString() +
+        selectedLeaveType!.id.toString() +
         DateFormat('yyyy-MM-dd', 'id')
-            .format(requestState.leaveRequest.startDate) +
+            .format(requestState.leaveRequest.startDate!) +
         DateFormat('yyyy-MM-dd', 'id').format(
-            requestState.leaveRequest.durationType.id != 0
-                ? requestState.leaveRequest.startDate
-                : requestState.leaveRequest.endDate) +
+            requestState.leaveRequest.durationType!.id != 0
+                ? requestState.leaveRequest.startDate!
+                : requestState.leaveRequest.endDate!) +
         'SELF' +
         json.encode(attachment) +
         remarksText.text +
@@ -208,21 +209,21 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
         halfDay +
         halfDay2 +
         dateLeaveList.join(',') +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
-      selectedLeaveTypeGroup.id.toString(),
-      selectedLeaveType.id.toString(),
+      selectedLeaveTypeGroup!.id.toString(),
+      selectedLeaveType!.id.toString(),
       DateFormat('yyyy-MM-dd', 'id')
-          .format(requestState.leaveRequest.startDate),
+          .format(requestState.leaveRequest.startDate!),
       DateFormat('yyyy-MM-dd', 'id').format(
-          requestState.leaveRequest.durationType.id != 0
-              ? requestState.leaveRequest.startDate
-              : requestState.leaveRequest.endDate),
+          requestState.leaveRequest.durationType!.id != 0
+              ? requestState.leaveRequest.startDate!
+              : requestState.leaveRequest.endDate!),
       'SELF',
       attachment,
       remarksText.text,
@@ -231,17 +232,17 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       halfDay,
       halfDay2,
       dateLeaveList.join(','),
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
     Uri urlSubmit;
-    if (prefs.getBool("secure")) {
-      urlSubmit = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveSubmit);
+    if (prefs.getBool("secure")!) {
+      urlSubmit = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveSubmit);
     } else {
-      urlSubmit = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveSubmit);
+      urlSubmit = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveSubmit);
     }
     log("Parameter Leave Request $parameters");
     UIFunction.showDialogLoadingBlank(context: context);
@@ -292,7 +293,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.75),
+        constraints: BoxConstraints(maxHeight: height! * 0.75),
         child: const EmployeeModal(
           type: 1,
         ),
@@ -310,7 +311,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.65),
+        constraints: BoxConstraints(maxHeight: height! * 0.65),
         child: Container(
           padding: const EdgeInsets.symmetric(
             vertical: 0,
@@ -334,7 +335,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -369,7 +370,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             horizontal: 10, vertical: 0),
                         onTap: () {
                           if (selectedLeaveType != null) {
-                            if (selectedLeaveTypeGroup.id !=
+                            if (selectedLeaveTypeGroup!.id !=
                                 deviceState.leaveTypeGroup[i].id) {
                               selectedLeaveType = null;
                               leaveTypeText.text = '';
@@ -378,18 +379,18 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           selectedLeaveTypeGroup =
                               deviceState.leaveTypeGroup[i];
                           leaveTypeGroupText.text =
-                              selectedLeaveTypeGroup.label;
+                              selectedLeaveTypeGroup!.label!;
 
                           setState(() {});
                           Navigator.pop(context);
                         },
                         title: Text(
-                          deviceState.leaveTypeGroup[i].label,
+                          deviceState.leaveTypeGroup[i].label!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: selectedLeaveTypeGroup == null ||
-                                selectedLeaveTypeGroup.id !=
+                                selectedLeaveTypeGroup!.id !=
                                     deviceState.leaveTypeGroup[i].id
                             ? const SizedBox(
                                 height: 5,
@@ -415,7 +416,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.65),
+        constraints: BoxConstraints(maxHeight: height! * 0.65),
         child: Container(
           padding: const EdgeInsets.symmetric(
             vertical: 0,
@@ -439,7 +440,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -462,7 +463,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
               Expanded(
                 child: ListView.separated(
                     padding: const EdgeInsets.all(0),
-                    itemCount: selectedLeaveTypeGroup.children.length,
+                    itemCount: selectedLeaveTypeGroup!.children!.length,
                     separatorBuilder: (BuildContext context, int i) {
                       return const Divider(
                         height: 0,
@@ -474,28 +475,28 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             horizontal: 10, vertical: 0),
                         onTap: () {
                           if (selectedLeaveType != null) {
-                            if (selectedLeaveTypeGroup.children[i].id !=
-                                selectedLeaveType.id) {
+                            if (selectedLeaveTypeGroup!.children![i].id !=
+                                selectedLeaveType!.id) {
                               resetSelected = true;
                               log("Reset Selected");
                             }
                           }
                           setState(() {
                             selectedLeaveType =
-                                selectedLeaveTypeGroup.children[i];
-                            leaveTypeText.text = selectedLeaveType.label;
+                                selectedLeaveTypeGroup!.children![i];
+                            leaveTypeText.text = selectedLeaveType!.label!;
                             getBalance();
                           });
                           Navigator.pop(context);
                         },
                         title: Text(
-                          selectedLeaveTypeGroup.children[i].label,
+                          selectedLeaveTypeGroup!.children![i].label!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: selectedLeaveType == null ||
-                                selectedLeaveType.id !=
-                                    selectedLeaveTypeGroup.children[i].id
+                                selectedLeaveType!.id !=
+                                    selectedLeaveTypeGroup!.children![i].id
                             ? const SizedBox(
                                 height: 5,
                               )
@@ -513,13 +514,13 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     );
   }
 
-  Future<DateTime> getDate({DateTime selectedDate}) {
+  Future<DateTime?> getDate({required DateTime selectedDate}) {
     return showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(DateTime.now().month - 12),
       lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             primaryColor: Theme.of(context).primaryColor,
@@ -527,21 +528,21 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
             colorScheme:
                 ColorScheme.light(primary: Theme.of(context).primaryColor),
           ),
-          child: child,
+          child: child!,
         );
       },
     );
   }
 
   Future<void> onPickFile() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
-      attachFile = File(result.files.single.path);
-      attachFileSize = UIFunction.fileSize(await attachFile.length());
-      attachFileName = p.basenameWithoutExtension(attachFile.path);
-      attachFileExt = p.extension(attachFile.path);
+      attachFile = File(result.files.single.path!);
+      attachFileSize = UIFunction.fileSize(await attachFile!.length());
+      attachFileName = p.basenameWithoutExtension(attachFile!.path);
+      attachFileExt = p.extension(attachFile!.path);
       log(deviceState.extFile.toString());
-      int x = await attachFile.length();
+      int x = await attachFile!.length();
       if (x > deviceState.maxSizeFile) {
         attachFile = null;
         UIFunction.showToastMessage(
@@ -590,9 +591,9 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     setState(() {});
   }
 
-  void onSelectedDate({int i, LeaveEmployeeRequestModel employee}) {
+  void onSelectedDate({required int i, LeaveEmployeeRequestModel? employee}) {
     bool checkRequestDate = requestState.checkLeaveRequestEmployeeDate(
-      date: requestState.leaveRequest.startDate.add(
+      date: requestState.leaveRequest.startDate!.add(
         Duration(days: i),
       ),
       data: employee,
@@ -600,13 +601,13 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     if (checkRequestDate) {
       requestState.addLeaveRequestEmployeeDate(
         data: employee,
-        date: requestState.leaveRequest.startDate.add(
+        date: requestState.leaveRequest.startDate!.add(
           Duration(days: i),
         ),
       );
     } else {
-      if (selectedLeaveType.checkLeaveBalance) {
-        if (deviceState.leaveBalance - requestState.totalLeave == 0) {
+      if (selectedLeaveType!.checkLeaveBalance!) {
+        if (deviceState.leaveBalance! - requestState.totalLeave == 0) {
           UIFunction.showToastMessage(
             context: context,
             isError: true,
@@ -617,7 +618,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
         } else {
           requestState.addLeaveRequestEmployeeDate(
             data: employee,
-            date: requestState.leaveRequest.startDate.add(
+            date: requestState.leaveRequest.startDate!.add(
               Duration(days: i),
             ),
           );
@@ -625,7 +626,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       } else {
         requestState.addLeaveRequestEmployeeDate(
           data: employee,
-          date: requestState.leaveRequest.startDate.add(
+          date: requestState.leaveRequest.startDate!.add(
             Duration(days: i),
           ),
         );
@@ -634,13 +635,13 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
   }
 
   void onSelectAll() {
-    if (selectedLeaveType.checkLeaveBalance) {
-      int different = requestState.leaveRequest.endDate
-              .difference(requestState.leaveRequest.startDate)
+    if (selectedLeaveType!.checkLeaveBalance!) {
+      int different = requestState.leaveRequest.endDate!
+              .difference(requestState.leaveRequest.startDate!)
               .inDays +
           1;
       // if(requestState)
-      if (deviceState.leaveBalance - different < 0) {
+      if (deviceState.leaveBalance! - different < 0) {
         UIFunction.showToastMessage(
             context: context,
             isError: true,
@@ -756,11 +757,11 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
           height: 45.0,
         ),
         title: Text(
-          attachFileName,
+          attachFileName!,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(attachFileSize),
+        subtitle: Text(attachFileSize!),
         trailing: IconButton(
             icon: const Icon(Icons.delete),
             color: Colors.red,
@@ -794,7 +795,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       icon: Icon(
         Icons.file_upload_rounded,
         color: Colors.white,
-        size: Theme.of(context).primaryTextTheme.headline6.fontSize - 1,
+        size: Theme.of(context).primaryTextTheme.headline6!.fontSize! - 1,
       ),
       label: const Text(
         "Choose file",
@@ -805,11 +806,11 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     );
   }
 
-  Widget actionButton({String code, String title, Color color}) {
+  Widget actionButton({String? code, required String title, Color? color}) {
     return ElevatedButton(
       onPressed: () {
         if (code == "SCHEDULE") {
-          if (formScheduleKey.currentState.validate()) {
+          if (formScheduleKey.currentState!.validate()) {
             next();
           } else {
             log("please fill the field blank");
@@ -823,14 +824,14 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
           callAPI();
         }
       },
-      style: ElevatedButton.styleFrom(backgroundColor: color),
+      style: ElevatedButton.styleFrom(primary: color),
       child: Text(title),
     );
   }
 
   Widget buildSchedule() {
     return SizedBox(
-      height: height * 0.73,
+      height: height! * 0.73,
       child: Form(
         key: formScheduleKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -852,7 +853,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           child: GroupButton(
                             controller: durationController,
                             isRadio: true,
-                            onSelected: (text, index, isSelected) {
+                            onSelected: (dynamic text, index, isSelected) {
                               durationType = index;
                               requestState.updateLeaveRequestDuration(
                                   durationType:
@@ -864,7 +865,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
 
                                 requestState.addLeaveRequestEmployeeDate2(
                                   data:
-                                      requestState.leaveRequest.employeeList[0],
+                                      requestState.leaveRequest.employeeList![0],
                                   date: requestState.leaveRequest.startDate,
                                 );
                               } else {
@@ -890,7 +891,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.caption.fontSize,
+                          Theme.of(context).primaryTextTheme.caption!.fontSize,
                     ),
                   ),
                   Padding(
@@ -909,7 +910,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           maxLines: 1,
                           controller: leaveTypeGroupText,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Leave type group is required';
                             } else {
                               return null;
@@ -929,7 +930,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.caption.fontSize,
+                          Theme.of(context).primaryTextTheme.caption!.fontSize,
                     ),
                   ),
                   Padding(
@@ -956,7 +957,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           maxLines: 1,
                           controller: leaveTypeText,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Leave type is required';
                             } else {
                               return null;
@@ -976,20 +977,20 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.caption.fontSize,
+                          Theme.of(context).primaryTextTheme.caption!.fontSize,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12.5),
                     child: InkWell(
                       onTap: () async {
-                        DateTime result =
+                        DateTime? result =
                             await getDate(selectedDate: startDate);
                         if (result != null) {
                           if (startDate != null && startDate != result) {
                             resetSelected = true;
                           }
-                          if (requestState.leaveRequest.durationType.id != 0) {
+                          if (requestState.leaveRequest.durationType!.id != 0) {
                             startDate = result;
                             endDate = result;
                             startDateText.text = DateFormat('dd MMM yyyy', 'id')
@@ -1033,7 +1034,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                           maxLines: 1,
                           controller: startDateText,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Start Date is required';
                             } else {
                               if (startDateText.text.isNotEmpty &&
@@ -1072,7 +1073,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                               fontWeight: FontWeight.bold,
                               fontSize: Theme.of(context)
                                   .primaryTextTheme
-                                  .caption
+                                  .caption!
                                   .fontSize,
                             ),
                           ),
@@ -1080,7 +1081,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                             padding: const EdgeInsets.only(bottom: 12.5),
                             child: InkWell(
                               onTap: () async {
-                                DateTime result =
+                                DateTime? result =
                                     await getDate(selectedDate: endDate);
                                 if (result != null) {
                                   if (endDate != null && endDate != result) {
@@ -1112,7 +1113,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                                   maxLines: 1,
                                   controller: endDateText,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return 'End Date is required';
                                     } else {
                                       if (startDateText.text.isNotEmpty &&
@@ -1152,7 +1153,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.caption.fontSize,
+                          Theme.of(context).primaryTextTheme.caption!.fontSize,
                     ),
                   ),
                   Padding(
@@ -1176,7 +1177,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.caption.fontSize,
+                          Theme.of(context).primaryTextTheme.caption!.fontSize,
                     ),
                   ),
                   Padding(
@@ -1210,7 +1211,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize:
-                            Theme.of(context).primaryTextTheme.caption.fontSize,
+                            Theme.of(context).primaryTextTheme.caption!.fontSize,
                       ),
                     ),
                     buildAttachmentItem(),
@@ -1231,19 +1232,19 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
         child: Text("Please setup the schedule"),
       );
     } else {
-      if (requestState.leaveRequest.type.id == 1 &&
+      if (requestState.leaveRequest.type!.id == 1 &&
           requestState.leaveRequest.startDate != null &&
-          requestState.leaveRequest.employeeList.isNotEmpty) {
+          requestState.leaveRequest.employeeList!.isNotEmpty) {
         return SizedBox(
-          height: height * 0.73,
+          height: height! * 0.73,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             shrinkWrap: true,
             slivers: [
               SliverToBoxAdapter(
                 child: Visibility(
-                    visible: requestState.leaveRequest.endDate
-                                .difference(requestState.leaveRequest.startDate)
+                    visible: requestState.leaveRequest.endDate!
+                                .difference(requestState.leaveRequest.startDate!)
                                 .inDays >
                             1
                         ? true
@@ -1261,7 +1262,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                               activeColor: requestState.isSelectedAll
                                   ? Colors.red
                                   : Colors.blue,
-                              onChanged: (bool value) {
+                              onChanged: (bool? value) {
                                 onSelectAll();
                               }),
                           title: Text(requestState.isSelectedAll
@@ -1278,7 +1279,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                 child: Column(
                   children: [
                     buildListSchedule(
-                      employee: requestState.leaveRequest.employeeList[0],
+                      employee: requestState.leaveRequest.employeeList![0],
                     ),
                   ],
                 ),
@@ -1297,13 +1298,13 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
     }
   }
 
-  Widget buildListSchedule({LeaveEmployeeRequestModel employee}) {
+  Widget buildListSchedule({LeaveEmployeeRequestModel? employee}) {
     return ListView.separated(
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: requestState.leaveRequest.endDate
-              .difference(requestState.leaveRequest.startDate)
+      itemCount: requestState.leaveRequest.endDate!
+              .difference(requestState.leaveRequest.startDate!)
               .inDays +
           1,
       separatorBuilder: (context, i) {
@@ -1313,7 +1314,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       },
       itemBuilder: (context, i) {
         bool checkRequestDate = requestState.checkLeaveRequestEmployeeDate(
-          date: requestState.leaveRequest.startDate.add(
+          date: requestState.leaveRequest.startDate!.add(
             Duration(days: i),
           ),
           data: employee,
@@ -1327,12 +1328,12 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
           },
           leading: Checkbox(
               value: checkRequestDate,
-              onChanged: (bool value) {
+              onChanged: (bool? value) {
                 onSelectedDate(i: i, employee: employee);
               }),
           title: Text(
             DateFormat('dd MMM yyyy', 'id').format(
-                requestState.leaveRequest.startDate.add(Duration(days: i))),
+                requestState.leaveRequest.startDate!.add(Duration(days: i))),
           ),
         );
       },
@@ -1364,7 +1365,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                 child: SkeletonAnimation(
                   child: Container(
                     height:
-                        Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                        Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                     decoration: BoxDecoration(
                       color: Theme.of(context).dividerColor,
                     ),
@@ -1378,7 +1379,7 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
                       child: Container(
                         height: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         decoration: BoxDecoration(
                           color: Theme.of(context).dividerColor,

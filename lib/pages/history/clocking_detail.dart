@@ -17,8 +17,8 @@ import 'package:snapping_sheet/snapping_sheet.dart';
 
 class ClockingHistoryDetailPage extends StatefulWidget {
   static const routeName = '/history/clocking/detail';
-  final ClockingHistoryModel data;
-  const ClockingHistoryDetailPage({Key key, this.data}) : super(key: key);
+  final ClockingHistoryModel? data;
+  const ClockingHistoryDetailPage({Key? key, this.data}) : super(key: key);
 
   @override
   State<ClockingHistoryDetailPage> createState() =>
@@ -31,10 +31,10 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
   Completer<GoogleMapController> mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId markerId = const MarkerId("my_position_marker");
-  DeviceState deviceState;
-  double widthScreen, heightScreen;
-  SharedPreferences prefs;
-  Uri urlImage;
+  DeviceState? deviceState;
+  double? widthScreen, heightScreen;
+  late SharedPreferences prefs;
+  Uri? urlImage;
 
   @override
   void initState() {
@@ -42,12 +42,12 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
     log("image url");
     Future.delayed(Duration.zero, () async {
       prefs = await SharedPreferences.getInstance();
-      if (prefs.getBool("secure")) {
-        urlImage = Uri.https(prefs.getString("host"),
-            prefs.getString("prefix") + widget.data.imageUrl);
+      if (prefs.getBool("secure")!) {
+        urlImage = Uri.https(prefs.getString("host")!,
+            prefs.getString("prefix")! + widget.data!.imageUrl!);
       } else {
-        urlImage = Uri.http(prefs.getString("host"),
-            prefs.getString("prefix") + widget.data.imageUrl);
+        urlImage = Uri.http(prefs.getString("host")!,
+            prefs.getString("prefix")! + widget.data!.imageUrl!);
       }
     });
   }
@@ -119,19 +119,19 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
           zoomControlsEnabled: false,
           compassEnabled: false,
           initialCameraPosition: CameraPosition(
-            target: widget.data.latitude == null
+            target: widget.data!.latitude == null
                 ? const LatLng(-6.371302922081892, 107.2787540731551)
-                : LatLng(widget.data.latitude, widget.data.longitude),
+                : LatLng(widget.data!.latitude!, widget.data!.longitude!),
             zoom: 17,
           ),
           onMapCreated: (GoogleMapController controller) {
             mapController.complete(controller);
-            if (widget.data.latitude != null) {
+            if (widget.data!.latitude != null) {
               Marker marker = Marker(
                 markerId: markerId,
                 position: LatLng(
-                  widget.data.latitude,
-                  widget.data.longitude,
+                  widget.data!.latitude!,
+                  widget.data!.longitude!,
                 ),
                 infoWindow:
                     const InfoWindow(title: "My Position", snippet: '*'),
@@ -185,16 +185,16 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
           ListTile(
             leading: CircleAvatar(
               radius: 20,
-              backgroundColor: widget.data.type.toLowerCase() == 'in'
+              backgroundColor: widget.data!.type!.toLowerCase() == 'in'
                   ? Theme.of(context).primaryColor
-                  : widget.data.type.toLowerCase() == 'out'
+                  : widget.data!.type!.toLowerCase() == 'out'
                       ? Colors.redAccent
                       : Colors.orangeAccent,
               child: Center(
                 child: Icon(
-                  widget.data.type.toLowerCase() == 'in'
+                  widget.data!.type!.toLowerCase() == 'in'
                       ? FontAwesomeIcons.arrowUp
-                      : widget.data.type.toLowerCase() == 'out'
+                      : widget.data!.type!.toLowerCase() == 'out'
                           ? FontAwesomeIcons.arrowDown
                           : FontAwesomeIcons.question,
                   color: Colors.white,
@@ -205,11 +205,11 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
             title: Row(
               children: [
                 Text(
-                  DateFormat('dd MMM yyyy', 'id').format(widget.data.date),
+                  DateFormat('dd MMM yyyy', 'id').format(widget.data!.date),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "- ${widget.data.group}",
+                  "- ${widget.data!.group}",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -218,19 +218,19 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  widget.data.time,
+                  widget.data!.time!,
                   style: TextStyle(
                       fontSize: Theme.of(context)
                           .primaryTextTheme
-                          .subtitle2
+                          .subtitle2!
                           .fontSize),
                 ),
                 Text(
-                  widget.data.status,
+                  widget.data!.status!,
                   style: TextStyle(
                       fontSize: Theme.of(context)
                           .primaryTextTheme
-                          .subtitle2
+                          .subtitle2!
                           .fontSize),
                 )
               ],
@@ -257,17 +257,17 @@ class _ClockingHistoryDetailPageState extends State<ClockingHistoryDetailPage> {
             const SizedBox(
               height: 2,
             ),
-            Text(widget.data.note),
+            Text(widget.data!.note!),
             Center(
               child: CachedNetworkImage(
-                imageUrl: "$urlImage${widget.data.queryString}",
+                imageUrl: "$urlImage${widget.data!.queryString}",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const LoadingWidget(),
                 errorWidget: (context, url, error) {
                   log("error => $urlImage");
                   return SvgPicture.asset(
                     UIImage.noPhoto,
-                    height: heightScreen * 0.25,
+                    height: heightScreen! * 0.25,
                   );
                 },
               ),

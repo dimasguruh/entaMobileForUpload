@@ -15,8 +15,8 @@ import 'package:snapping_sheet/snapping_sheet.dart';
 
 class HistoryDetailPage extends StatefulWidget {
   static const routeName = '/history/detail';
-  final HistoryModel data;
-  const HistoryDetailPage({Key key, this.data}) : super(key: key);
+  final HistoryModel? data;
+  const HistoryDetailPage({Key? key, this.data}) : super(key: key);
 
   @override
   State<HistoryDetailPage> createState() => _HistoryDetailPageState();
@@ -28,15 +28,15 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
   Completer<GoogleMapController> mapController = Completer();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId markerId = const MarkerId("my_position_marker");
-  DeviceState deviceState;
-  double widthScreen, heightScreen;
+  late DeviceState deviceState;
+  double? widthScreen, heightScreen;
 
   @override
   void initState() {
     super.initState();
     log("image url");
     Future.delayed(Duration.zero, () {
-      log(deviceState.myAuth.host + widget.data.imageUrl);
+      log(deviceState.myAuth!.host! + widget.data!.imageUrl!);
     });
   }
 
@@ -107,8 +107,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
           zoomControlsEnabled: false,
           compassEnabled: false,
           initialCameraPosition: CameraPosition(
-            target: LatLng(double.parse(widget.data.latitude),
-                double.parse(widget.data.longitude)),
+            target: LatLng(double.parse(widget.data!.latitude!),
+                double.parse(widget.data!.longitude!)),
             zoom: 17,
           ),
           onMapCreated: (GoogleMapController controller) {
@@ -116,8 +116,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
             Marker marker = Marker(
               markerId: markerId,
               position: LatLng(
-                double.parse(widget.data.latitude),
-                double.parse(widget.data.longitude),
+                double.parse(widget.data!.latitude!),
+                double.parse(widget.data!.longitude!),
               ),
               infoWindow: const InfoWindow(title: "My Position", snippet: '*'),
               onTap: () {
@@ -168,16 +168,16 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
           ListTile(
             leading: CircleAvatar(
               radius: 20,
-              backgroundColor: widget.data.type == 'in'
+              backgroundColor: widget.data!.type == 'in'
                   ? Theme.of(context).primaryColor
-                  : widget.data.type == 'out'
+                  : widget.data!.type == 'out'
                       ? Colors.redAccent
                       : Colors.orangeAccent,
               child: Center(
                 child: Icon(
-                  widget.data.type == 'in'
+                  widget.data!.type == 'in'
                       ? FontAwesomeIcons.arrowUp
-                      : widget.data.type == 'out'
+                      : widget.data!.type == 'out'
                           ? FontAwesomeIcons.arrowDown
                           : FontAwesomeIcons.question,
                   color: Colors.white,
@@ -186,26 +186,26 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
               ),
             ),
             title: Text(
-              widget.data.date,
+              widget.data!.date!,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  widget.data.time,
+                  widget.data!.time!,
                   style: TextStyle(
                       fontSize: Theme.of(context)
                           .primaryTextTheme
-                          .subtitle2
+                          .subtitle2!
                           .fontSize),
                 ),
                 Text(
-                  widget.data.status,
+                  widget.data!.status!,
                   style: TextStyle(
                       fontSize: Theme.of(context)
                           .primaryTextTheme
-                          .subtitle2
+                          .subtitle2!
                           .fontSize),
                 )
               ],
@@ -232,17 +232,17 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
             const SizedBox(
               height: 2,
             ),
-            Text(widget.data.note),
+            Text(widget.data!.note!),
             Center(
               child: CachedNetworkImage(
-                imageUrl: "${deviceState.myAuth.host}${widget.data.imageUrl}",
+                imageUrl: "${deviceState.myAuth!.host}${widget.data!.imageUrl}",
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const LoadingWidget(),
                 errorWidget: (context, url, error) {
-                  log("error => ${deviceState.myAuth.host}${widget.data.imageUrl}");
+                  log("error => ${deviceState.myAuth!.host}${widget.data!.imageUrl}");
                   return SvgPicture.asset(
                     UIImage.noPhoto,
-                    height: heightScreen * 0.25,
+                    height: heightScreen! * 0.25,
                   );
                 },
               ),

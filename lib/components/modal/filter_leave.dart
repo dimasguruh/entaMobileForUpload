@@ -11,11 +11,11 @@ import 'package:provider/provider.dart';
 import '../../utils/functions.dart';
 
 class FilterLeaveModal extends StatefulWidget {
-  final DateTime startDate, endDate;
-  final List<GeneralModel> filterStatus;
-  final GeneralModel leaveType;
+  final DateTime? startDate, endDate;
+  final List<GeneralModel>? filterStatus;
+  final GeneralModel? leaveType;
   const FilterLeaveModal(
-      {Key key,
+      {Key? key,
       this.startDate,
       this.endDate,
       this.filterStatus,
@@ -27,12 +27,12 @@ class FilterLeaveModal extends StatefulWidget {
 }
 
 class _FilterLeaveModalState extends State<FilterLeaveModal> {
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now();
-  List<GeneralModel> filterStatus = [];
-  GeneralModel leaveType;
-  double height;
-  DeviceState deviceState;
+  DateTime? startDate = DateTime.now();
+  DateTime? endDate = DateTime.now();
+  List<GeneralModel>? filterStatus = [];
+  GeneralModel? leaveType;
+  late double height;
+  late DeviceState deviceState;
   @override
   void initState() {
     super.initState();
@@ -51,23 +51,23 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
   }
 
   Future<void> dateTimeRangePicker() async {
-    DateTimeRange picked = await showDateRangePicker(
+    DateTimeRange? picked = await showDateRangePicker(
       context: context,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             brightness: Brightness.light,
             colorScheme:
                 ColorScheme.light(primary: Theme.of(context).primaryColor),
           ),
-          child: child,
+          child: child!,
         );
       },
       firstDate: DateTime(DateTime.now().year - 2),
       lastDate: DateTime(DateTime.now().year + 2),
       initialDateRange: DateTimeRange(
-        end: endDate,
-        start: startDate,
+        end: endDate!,
+        start: startDate!,
       ),
     );
     if (picked == null) {
@@ -120,7 +120,7 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -160,12 +160,12 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                           Navigator.pop(context);
                         },
                         title: Text(
-                          deviceState.leaveTypeList[i].label,
+                          deviceState.leaveTypeList[i].label!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: leaveType == null ||
-                                leaveType.id != deviceState.leaveTypeList[i].id
+                                leaveType!.id != deviceState.leaveTypeList[i].id
                             ? const SizedBox(
                                 height: 5,
                               )
@@ -196,19 +196,19 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
           },
           child: Icon(
             Icons.close,
-            size: Theme.of(context).primaryTextTheme.headline6.fontSize + 1,
+            size: Theme.of(context).primaryTextTheme.headline6!.fontSize! + 1,
           ),
         ),
         middle: Text(
           "Filter",
           style: TextStyle(
             fontWeight: FontWeight.normal,
-            fontSize: Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+            fontSize: Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
           ),
         ),
         trailing: InkWell(
           onTap: () {
-            for (var element in filterStatus) {
+            for (var element in filterStatus!) {
               element.selected = true;
             }
             startDate = DateTime.now().subtract(const Duration(days: 30));
@@ -220,7 +220,7 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
             "Reset",
             style: TextStyle(
               color: Theme.of(context).primaryColor,
-              fontSize: Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+              fontSize: Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -247,16 +247,16 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                       ),
                     ),
                     subtitle: Text(
-                      "${DateFormat('dd MMMM yyyy', 'id').format(startDate)} - ${DateFormat('dd MMMM yyyy', 'id').format(endDate)}",
+                      "${DateFormat('dd MMMM yyyy', 'id').format(startDate!)} - ${DateFormat('dd MMMM yyyy', 'id').format(endDate!)}",
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle2
+                            .subtitle2!
                             .fontSize,
                       ),
                     ),
@@ -276,16 +276,16 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                       ),
                     ),
                     subtitle: Text(
-                      leaveType == null ? '-' : leaveType.label,
+                      leaveType == null ? '-' : leaveType!.label!,
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle2
+                            .subtitle2!
                             .fontSize,
                       ),
                     ),
@@ -301,7 +301,7 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         fontWeight: FontWeight.w600,
                       ),
@@ -310,30 +310,30 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filterStatus.length,
+                    itemCount: filterStatus!.length,
                     itemBuilder: (BuildContext context, int i) {
                       return InkWell(
                         onTap: () {
-                          filterStatus[i].selected = !filterStatus[i].selected;
+                          filterStatus![i].selected = !filterStatus![i].selected!;
                           setState(() {});
                         },
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
-                                filterStatus[i].label,
+                                filterStatus![i].label!,
                                 style: TextStyle(
                                   fontSize: Theme.of(context)
                                       .primaryTextTheme
-                                      .subtitle1
+                                      .subtitle1!
                                       .fontSize,
                                 ),
                               ),
                             ),
                             Checkbox(
-                              value: filterStatus[i].selected,
-                              onChanged: (bool value) {
-                                filterStatus[i].selected = value;
+                              value: filterStatus![i].selected,
+                              onChanged: (bool? value) {
+                                filterStatus![i].selected = value;
 
                                 setState(() {});
                               },
@@ -355,7 +355,7 @@ class _FilterLeaveModalState extends State<FilterLeaveModal> {
                   result["end_date"] = endDate;
                   result["status"] = filterStatus;
                   result["leave_type"] = leaveType;
-                  log(leaveType.id.toString());
+                  log(leaveType!.id.toString());
                   Navigator.pop(context, result);
                 },
                 child: const Text("Submit"),

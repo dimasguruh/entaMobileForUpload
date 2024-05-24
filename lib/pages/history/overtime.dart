@@ -19,19 +19,19 @@ import '../../utils/url.dart';
 
 class OvertimeHistoryPage extends StatefulWidget {
   static const routeName = '/history/overtime';
-  const OvertimeHistoryPage({Key key}) : super(key: key);
+  const OvertimeHistoryPage({Key? key}) : super(key: key);
 
   @override
   State<OvertimeHistoryPage> createState() => _OvertimeHistoryPageState();
 }
 
 class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
-  DeviceState deviceState;
-  DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime endDate = DateTime.now();
-  List<String> status = [];
-  SharedPreferences prefs;
-  List<GeneralModel> filterStatus = [
+  late DeviceState deviceState;
+  DateTime? startDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime? endDate = DateTime.now();
+  List<String?> status = [];
+  late SharedPreferences prefs;
+  List<GeneralModel>? filterStatus = [
     GeneralModel(
       code: 'OPEN',
       label: 'Open',
@@ -48,7 +48,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
       selected: true,
     ),
   ];
-  double height;
+  late double height;
   @override
   void initState() {
     super.initState();
@@ -65,12 +65,12 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
 
   Future<void> initPage() async {
     Uri uriHistory;
-    if (prefs.getBool("secure")) {
-      uriHistory = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.overtimeHistory);
+    if (prefs.getBool("secure")!) {
+      uriHistory = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.overtimeHistory);
     } else {
-      uriHistory = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.overtimeHistory);
+      uriHistory = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.overtimeHistory);
     }
     // ignore: prefer_interpolation_to_compose_strings
     String statusText = '';
@@ -79,21 +79,21 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
     } else {
       statusText = status.join(',');
     }
-    String planText = prefs.getString("username") +
-        DateFormat('yyyy-MM-dd', 'id').format(startDate) +
-        DateFormat('yyyy-MM-dd', 'id').format(endDate) +
+    String planText = prefs.getString("username")! +
+        DateFormat('yyyy-MM-dd', 'id').format(startDate!) +
+        DateFormat('yyyy-MM-dd', 'id').format(endDate!) +
         statusText +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
-      DateFormat('yyyy-MM-dd', 'id').format(startDate),
-      DateFormat('yyyy-MM-dd', 'id').format(endDate),
+      DateFormat('yyyy-MM-dd', 'id').format(startDate!),
+      DateFormat('yyyy-MM-dd', 'id').format(endDate!),
       statusText,
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -101,7 +101,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
     await deviceState.actionCallAPI(
       method: 'POST',
       uri: uriHistory,
-      prefix: prefs.getString("prefix"),
+      prefix: prefs.getString("prefix")!,
       formData: parameters,
     );
   }
@@ -126,7 +126,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
       filterStatus = result['status'];
       startDate = result['start_date'];
       endDate = result['end_date'];
-      var x = filterStatus.where((element) => element.selected == true);
+      var x = filterStatus!.where((element) => element.selected == true);
       status.clear();
       for (var element in x) {
         status.add(element.code);
@@ -136,7 +136,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
     }
   }
 
-  Future<void> showDetail({OvertimeHistoryModel data}) async {
+  Future<void> showDetail({OvertimeHistoryModel? data}) async {
     FocusScope.of(context).requestFocus(FocusNode());
     await showMaterialModalBottomSheet(
       context: context,
@@ -167,7 +167,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -205,17 +205,17 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.code,
+                                  data!.code!,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -232,17 +232,17 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  "${DateFormat('dd MMM yyyy', 'id').format(data.startDate)} - ${DateFormat('dd MMM yyyy', 'id').format(data.endDate)}",
+                                  "${DateFormat('dd MMM yyyy', 'id').format(data.startDate!)} - ${DateFormat('dd MMM yyyy', 'id').format(data.endDate!)}",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -259,18 +259,18 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.status,
+                                  data.status!,
                                   style: TextStyle(
                                     color: data.statusColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -295,7 +295,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -314,34 +314,34 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                           const EdgeInsets.symmetric(
                                               horizontal: 10),
                                       title: Text(
-                                        data.approver[i].employeeName,
+                                        data.approver[i].employeeName!,
                                         style: TextStyle(
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .subtitle1
+                                              .subtitle1!
                                               .fontSize,
                                         ),
                                       ),
                                       subtitle: Text(
                                         data.approver[i].remark == ''
                                             ? '-'
-                                            : data.approver[i].remark,
+                                            : data.approver[i].remark!,
                                         style: TextStyle(
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .caption
+                                              .caption!
                                               .fontSize,
                                         ),
                                       ),
                                       trailing: Text(
-                                        data.approver[i].status,
+                                        data.approver[i].status!,
                                         style: TextStyle(
                                           color: data.approver[i].statusColor,
                                           fontStyle: FontStyle.italic,
                                           fontWeight: FontWeight.bold,
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .caption
+                                              .caption!
                                               .fontSize,
                                         ),
                                       ),
@@ -373,7 +373,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -401,7 +401,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                             style: TextStyle(
                                               fontSize: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .subtitle1
+                                                  .subtitle1!
                                                   .fontSize,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -421,16 +421,16 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .caption
+                                                        .caption!
                                                         .fontSize,
                                                   ),
                                                 ),
                                                 subtitle: Text(
-                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].beforeInDate)} ",
+                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].beforeInDate!)} ",
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .subtitle1
+                                                        .subtitle1!
                                                         .fontSize,
                                                   ),
                                                 ),
@@ -449,16 +449,16 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .caption
+                                                        .caption!
                                                         .fontSize,
                                                   ),
                                                 ),
                                                 subtitle: Text(
-                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].beforeOutDate)} ",
+                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].beforeOutDate!)} ",
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .subtitle1
+                                                        .subtitle1!
                                                         .fontSize,
                                                   ),
                                                 ),
@@ -477,16 +477,16 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .caption
+                                                        .caption!
                                                         .fontSize,
                                                   ),
                                                 ),
                                                 subtitle: Text(
-                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].afterInDate)} ",
+                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].afterInDate!)} ",
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .subtitle1
+                                                        .subtitle1!
                                                         .fontSize,
                                                   ),
                                                 ),
@@ -505,16 +505,16 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .caption
+                                                        .caption!
                                                         .fontSize,
                                                   ),
                                                 ),
                                                 subtitle: Text(
-                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].afterOutDate)} ",
+                                                  "${DateFormat('dd MMM yyyy HH:mm', 'id').format(data.detail[i].afterOutDate!)} ",
                                                   style: TextStyle(
                                                     fontSize: Theme.of(context)
                                                         .primaryTextTheme
-                                                        .subtitle1
+                                                        .subtitle1!
                                                         .fontSize,
                                                   ),
                                                 ),
@@ -529,7 +529,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                             style: TextStyle(
                                               fontSize: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .caption
+                                                  .caption!
                                                   .fontSize,
                                             ),
                                           ),
@@ -538,7 +538,7 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                                             style: TextStyle(
                                               fontSize: Theme.of(context)
                                                   .primaryTextTheme
-                                                  .subtitle1
+                                                  .subtitle1!
                                                   .fontSize,
                                             ),
                                           ),
@@ -630,28 +630,28 @@ class _OvertimeHistoryPageState extends State<OvertimeHistoryPage> {
                   size: 15,
                 ),
                 title: Text(
-                  deviceState.overtimeHistoryList[i].code,
+                  deviceState.overtimeHistoryList[i].code!,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "${DateFormat('dd MMM yyyy', 'id').format(deviceState.overtimeHistoryList[i].startDate)} - ${DateFormat('dd MMM yyyy', 'id').format(deviceState.overtimeHistoryList[i].endDate)}",
+                      "${DateFormat('dd MMM yyyy', 'id').format(deviceState.overtimeHistoryList[i].startDate!)} - ${DateFormat('dd MMM yyyy', 'id').format(deviceState.overtimeHistoryList[i].endDate!)}",
                       style: TextStyle(
                           fontSize: Theme.of(context)
                               .primaryTextTheme
-                              .subtitle2
+                              .subtitle2!
                               .fontSize),
                     ),
                     Text(
-                      deviceState.overtimeHistoryList[i].status,
+                      deviceState.overtimeHistoryList[i].status!,
                       style: TextStyle(
                           color: deviceState.overtimeHistoryList[i].statusColor,
                           fontStyle: FontStyle.italic,
                           fontSize: Theme.of(context)
                               .primaryTextTheme
-                              .caption
+                              .caption!
                               .fontSize),
                     )
                   ],

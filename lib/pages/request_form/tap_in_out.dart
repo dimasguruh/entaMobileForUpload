@@ -29,10 +29,10 @@ import '../../utils/url.dart';
 
 class TapInOutPage extends StatefulWidget {
   static const routeName = '/tap-in-out';
-  final String url;
-  final String title;
-  final String type;
-  const TapInOutPage({Key key, @required this.type, this.title, this.url})
+  final String? url;
+  final String? title;
+  final String? type;
+  const TapInOutPage({Key? key, required this.type, this.title, this.url})
       : super(key: key);
 
   @override
@@ -40,16 +40,16 @@ class TapInOutPage extends StatefulWidget {
 }
 
 class _TapInOutPageState extends State<TapInOutPage> {
-  DeviceState deviceState;
+  late DeviceState deviceState;
   Completer<GoogleMapController> mapController = Completer();
   final TextEditingController noteText = TextEditingController();
   final TextEditingController clockingTypeText = TextEditingController();
   Location location = Location();
   final formKey = GlobalKey<FormState>();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  GeneralModel selectedClockingType;
-  File _imageFile;
-  double height, width;
+  GeneralModel? selectedClockingType;
+  File? _imageFile;
+  double? height, width;
   bool isLoading = false;
   bool isLoadingMap = false;
   bool isMapReady = false;
@@ -58,11 +58,11 @@ class _TapInOutPageState extends State<TapInOutPage> {
   List<OfficeModel> nearestOffice = [];
   String infoJeff = "jefri";
   MarkerId markerId = const MarkerId("my_position_marker");
-  String _imageBase64;
+  String? _imageBase64;
   // String  _latitude, _longitude;
   // double latitude, longitude;
   var _planText, _secretKey, _parameters, responseAPI;
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   final typeController = GroupButtonController();
   bool isCallAPI = false;
 
@@ -97,8 +97,8 @@ class _TapInOutPageState extends State<TapInOutPage> {
       Marker marker = Marker(
         markerId: markerId,
         position: LatLng(
-          deviceState.myLat,
-          deviceState.myLong,
+          deviceState.myLat!,
+          deviceState.myLong!,
         ),
         infoWindow: const InfoWindow(title: "My Position", snippet: '*'),
         onTap: () {
@@ -108,7 +108,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
 
       goToNewPosition(
         newPosition: CameraPosition(
-            target: LatLng(deviceState.myLat, deviceState.myLong), zoom: 16),
+            target: LatLng(deviceState.myLat!, deviceState.myLong!), zoom: 16),
       );
       setState(() {
         markers[markerId] = marker;
@@ -116,7 +116,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
     }
   }
 
-  Future<void> goToNewPosition({CameraPosition newPosition}) async {
+  Future<void> goToNewPosition({required CameraPosition newPosition}) async {
     final GoogleMapController controller = await mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
@@ -125,8 +125,8 @@ class _TapInOutPageState extends State<TapInOutPage> {
     var image = await ImagePicker().pickImage(
         source: source,
         imageQuality: 50,
-        maxHeight: height * 0.4,
-        maxWidth: width * 0.4);
+        maxHeight: height! * 0.4,
+        maxWidth: width! * 0.4);
     if (image != null) {
       setState(() {
         _imageFile = File(image.path);
@@ -142,7 +142,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
       expand: false,
       enableDrag: false,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.3),
+        constraints: BoxConstraints(maxHeight: height! * 0.3),
         child: Container(
           padding: const EdgeInsets.symmetric(
             vertical: 0,
@@ -166,7 +166,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -202,17 +202,17 @@ class _TapInOutPageState extends State<TapInOutPage> {
                         onTap: () {
                           setState(() {
                             selectedClockingType = UIData.clockingType[i];
-                            clockingTypeText.text = selectedClockingType.label;
+                            clockingTypeText.text = selectedClockingType!.label!;
                           });
                           Navigator.pop(context);
                         },
                         title: Text(
-                          UIData.clockingType[i].label,
+                          UIData.clockingType[i].label!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: selectedClockingType == null ||
-                                selectedClockingType.id !=
+                                selectedClockingType!.id !=
                                     UIData.clockingType[i].id
                             ? const SizedBox(
                                 height: 5,
@@ -263,31 +263,31 @@ class _TapInOutPageState extends State<TapInOutPage> {
 
   Future<void> callAPI() async {
     Uri uriTapInOut;
-    if (prefs.getBool("secure")) {
+    if (prefs.getBool("secure")!) {
       uriTapInOut = Uri.https(
-          prefs.getString("host"), prefs.getString("prefix") + widget.url);
+          prefs.getString("host")!, prefs.getString("prefix")! + widget.url!);
     } else {
       uriTapInOut = Uri.http(
-          prefs.getString("host"), prefs.getString("prefix") + widget.url);
+          prefs.getString("host")!, prefs.getString("prefix")! + widget.url!);
     }
-    String clockingTypeText = '';
+    String? clockingTypeText = '';
     if (widget.url == UIUrl.tapIn) {
-      clockingTypeText = selectedClockingType.code;
+      clockingTypeText = selectedClockingType!.code;
     } else {
       clockingTypeText = '';
     }
     _planText = "";
-    _imageBase64 = await UIFunction.encodeImageBase64(_imageFile);
-    _planText = prefs.getString("username") +
+    _imageBase64 = await (UIFunction.encodeImageBase64(_imageFile!) as FutureOr<String?>);
+    _planText = prefs.getString("username")! +
         deviceState.myLong.toString() +
         deviceState.myLat.toString() +
-        _imageBase64 +
+        _imageBase64! +
         noteText.text +
-        clockingTypeText +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        clockingTypeText! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     _secretKey = UIFunction.encodeSha1(_planText);
     _parameters = json.encode([
       prefs.getString("username"),
@@ -296,7 +296,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
       _imageBase64,
       noteText.text,
       clockingTypeText,
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       _secretKey
     ]);
@@ -374,7 +374,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.title,
+            widget.title!,
           ),
           actions: <Widget>[
             IconButton(
@@ -440,7 +440,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
         padding: const EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.grey[200]),
+          border: Border.all(color: Colors.grey[200]!),
         ),
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -460,15 +460,15 @@ class _TapInOutPageState extends State<TapInOutPage> {
   Widget buildPhoto() {
     if (_imageFile != null) {
       return Padding(
-        padding: EdgeInsets.only(top: width * 0.05, left: width * 0.05),
+        padding: EdgeInsets.only(top: width! * 0.05, left: width! * 0.05),
         child: Container(
           decoration: ShapeDecoration(
               color: Colors.white,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5))),
-              image: DecorationImage(image: FileImage(_imageFile))),
-          height: width * 0.28,
-          width: width * 0.2,
+              image: DecorationImage(image: FileImage(_imageFile!))),
+          height: width! * 0.28,
+          width: width! * 0.2,
         ),
       );
     } else {
@@ -504,7 +504,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
                   child: GroupButton(
                     controller: typeController,
                     isRadio: true,
-                    onSelected: (text, index, isSelected) {
+                    onSelected: (dynamic text, index, isSelected) {
                       selectedClockingType = deviceState.workFromStatusList[index];
                       setState(() {});
                     },
@@ -516,7 +516,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize:
-                        Theme.of(context).primaryTextTheme.caption.fontSize,
+                        Theme.of(context).primaryTextTheme.caption!.fontSize,
                   ),
                 ),
                 Padding(
@@ -552,7 +552,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
                               message: 'please activate your gps');
                         }
                       } else {
-                        if (formKey.currentState.validate()) {
+                        if (formKey.currentState!.validate()) {
                           LocationData locationData;
                           locationData = await location.getLocation();
                           log("get new location");
@@ -564,18 +564,18 @@ class _TapInOutPageState extends State<TapInOutPage> {
                             );
                           });
                           generateMarker();
-                          if (selectedClockingType.code == 'WFO' &&
+                          if (selectedClockingType!.code == 'WFO' &&
                               widget.url == UIUrl.tapIn) {
-                            if (deviceState.officeList.isEmpty) {
+                            if (deviceState.officeList!.isEmpty) {
                               Navigator.pop(context, true);
                             } else {
                               nearestOffice.clear();
-                              for (var e in deviceState.officeList) {
+                              for (var e in deviceState.officeList!) {
                                 double distance = UIFunction.calculateDistance(
-                                    lat1: e.latitude,
-                                    lat2: deviceState.myLat,
-                                    lon1: e.longitude,
-                                    lon2: deviceState.myLong);
+                                    lat1: e.latitude!,
+                                    lat2: deviceState.myLat!,
+                                    lon1: e.longitude!,
+                                    lon2: deviceState.myLong!);
                                 log("Distance My Location (${deviceState.myLat} - ${deviceState.myLong}) to ${e.name} (${e.latitude} - ${e.longitude}) is $distance KM");
                                 if (distance <= 1) {
                                   nearestOffice.add(e);

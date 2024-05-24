@@ -8,12 +8,12 @@ import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
 
 class OvertimeModal extends StatefulWidget {
-  final DateTime date;
-  final OvertimeEmployeeRequestModel employee;
-  final OvertimeDateRequestModel data;
-  final ShiftScheduleModel schedule;
+  final DateTime? date;
+  final OvertimeEmployeeRequestModel? employee;
+  final OvertimeDateRequestModel? data;
+  final ShiftScheduleModel? schedule;
   const OvertimeModal(
-      {Key key, this.date, this.employee, @required this.schedule, this.data})
+      {Key? key, this.date, this.employee, required this.schedule, this.data})
       : super(key: key);
 
   @override
@@ -27,48 +27,48 @@ class _OvertimeModalState extends State<OvertimeModal> {
   final TextEditingController afterOutText = TextEditingController();
   final TextEditingController totalOTBeforeText = TextEditingController();
   final TextEditingController totalOTAfterText = TextEditingController();
-  int totalOTBefore, totalOTAfter;
-  DateTime selectedBeforeIn = DateTime.now();
-  DateTime selectedBeforeOut = DateTime.now();
-  DateTime selectedAfterIn = DateTime.now();
-  DateTime selectedAfterOut = DateTime.now();
+  int? totalOTBefore, totalOTAfter;
+  DateTime? selectedBeforeIn = DateTime.now();
+  DateTime? selectedBeforeOut = DateTime.now();
+  DateTime? selectedAfterIn = DateTime.now();
+  DateTime? selectedAfterOut = DateTime.now();
   // TimeOfDay selectedBeforeIn = TimeOfDay.fromDateTime(DateTime.now());
   // TimeOfDay selectedBeforeOut = TimeOfDay.fromDateTime(DateTime.now());
   // TimeOfDay selectedAfterIn = TimeOfDay.fromDateTime(DateTime.now());
   // TimeOfDay selectedAfterOut = TimeOfDay.fromDateTime(DateTime.now());
   final formKey = GlobalKey<FormState>();
-  DeviceState deviceState;
+  late DeviceState deviceState;
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
       if (widget.data != null) {
-        selectedBeforeIn = widget.data.beforeIn ?? widget.date;
-        selectedBeforeOut = widget.data.beforeOut ?? widget.date;
-        if (widget.data.beforeIn != null) {
+        selectedBeforeIn = widget.data!.beforeIn ?? widget.date;
+        selectedBeforeOut = widget.data!.beforeOut ?? widget.date;
+        if (widget.data!.beforeIn != null) {
           beforeInText.text =
-              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedBeforeIn);
+              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedBeforeIn!);
 
           beforeOutText.text =
-              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedBeforeOut);
+              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedBeforeOut!);
           var totalOT = Jiffy(selectedBeforeOut)
               .diff(Jiffy(selectedBeforeIn), Units.MINUTE);
           totalOTBeforeText.text = "$totalOT mins";
-          totalOTBefore = totalOT;
+          totalOTBefore = totalOT as int?;
         }
 
-        selectedAfterIn = widget.data.afterIn ?? widget.date;
-        selectedAfterOut = widget.data.afterOut ?? widget.date;
-        if (widget.data.afterIn != null) {
+        selectedAfterIn = widget.data!.afterIn ?? widget.date;
+        selectedAfterOut = widget.data!.afterOut ?? widget.date;
+        if (widget.data!.afterIn != null) {
           afterInText.text =
-              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedAfterIn);
+              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedAfterIn!);
 
           afterOutText.text =
-              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedAfterOut);
+              DateFormat('dd MMMM yyyy HH:mm', 'id').format(selectedAfterOut!);
           var totalOT = Jiffy(selectedAfterOut)
               .diff(Jiffy(selectedAfterIn), Units.MINUTE);
           totalOTAfterText.text = "$totalOT mins";
-          totalOTAfter = totalOT;
+          totalOTAfter = totalOT as int?;
         }
       } else {
         selectedBeforeIn = widget.date;
@@ -85,13 +85,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
     super.dispose();
   }
 
-  Future<DateTime> getDate({DateTime selectedDate}) {
+  Future<DateTime?> getDate({required DateTime selectedDate}) {
     return showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: widget.date,
+      firstDate: widget.date!,
       lastDate: selectedDate.add(const Duration(days: 1)),
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             primaryColor: Theme.of(context).primaryColor,
@@ -99,17 +99,17 @@ class _OvertimeModalState extends State<OvertimeModal> {
             colorScheme:
                 ColorScheme.light(primary: Theme.of(context).primaryColor),
           ),
-          child: child,
+          child: child!,
         );
       },
     );
   }
 
-  Future<TimeOfDay> timePicker({TimeOfDay initialTime}) {
+  Future<TimeOfDay?> timePicker({required TimeOfDay initialTime}) {
     return showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             primaryColor: Theme.of(context).primaryColor,
@@ -120,7 +120,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
           child: MediaQuery(
               data:
                   MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-              child: child),
+              child: child!),
         );
       },
     );
@@ -147,13 +147,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    DateFormat('dd MMM yyyy', 'id').format(widget.date),
+                    DateFormat('dd MMM yyyy', 'id').format(widget.date!),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize:
-                          Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                          Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
@@ -162,14 +162,14 @@ class _OvertimeModalState extends State<OvertimeModal> {
                     child: Text(
                       deviceState.getInfoSchedule(
                           date: widget.date,
-                          employeeId: widget.employee.employee.employeeId),
+                          employeeId: widget.employee!.employee!.employeeId)!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -205,7 +205,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                             fontWeight: FontWeight.bold,
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize,
                           ),
                         ),
@@ -215,13 +215,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            DateTime resultDate =
-                                await getDate(selectedDate: selectedBeforeIn);
+                            DateTime? resultDate =
+                                await getDate(selectedDate: selectedBeforeIn!);
                             if (resultDate != null) {
-                              TimeOfDay resultTime = await timePicker(
+                              TimeOfDay? resultTime = await timePicker(
                                   initialTime: TimeOfDay(
-                                      hour: selectedBeforeIn.hour,
-                                      minute: selectedBeforeIn.minute));
+                                      hour: selectedBeforeIn!.hour,
+                                      minute: selectedBeforeIn!.minute));
                               if (resultTime != null) {
                                 selectedBeforeIn = DateTime(
                                     resultDate.year,
@@ -231,13 +231,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                     resultTime.minute);
                                 beforeInText.text =
                                     DateFormat('dd MMMM yyyy HH:mm', 'id')
-                                        .format(selectedBeforeIn);
+                                        .format(selectedBeforeIn!);
                                 if (beforeInText.text.isNotEmpty &&
                                     beforeOutText.text.isNotEmpty) {
                                   var totalOT = Jiffy(selectedBeforeOut).diff(
                                       Jiffy(selectedBeforeIn), Units.MINUTE);
                                   totalOTBeforeText.text = "$totalOT mins";
-                                  totalOTBefore = totalOT;
+                                  totalOTBefore = totalOT as int?;
                                 }
 
                                 setState(() {});
@@ -250,7 +250,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                               maxLines: 1,
                               controller: beforeInText,
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value!.isEmpty) {
                                   if (beforeOutText.text.isEmpty) {
                                     return null;
                                   } else {
@@ -259,12 +259,12 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                 } else {
                                   if (beforeInText.text.isNotEmpty &&
                                       beforeOutText.text.isNotEmpty) {
-                                    if (selectedBeforeOut
-                                        .isAfter(selectedBeforeIn)) {
-                                      if (totalOTBefore >
-                                          widget.schedule.maxOT) {
-                                        int hour = widget.schedule.maxOT ~/ 60;
-                                        return 'Maximum OT is ${hour} Hours';
+                                    if (selectedBeforeOut!
+                                        .isAfter(selectedBeforeIn!)) {
+                                      if (totalOTBefore! >
+                                          widget.schedule!.maxOT) {
+                                        int hour = widget.schedule!.maxOT ~/ 60;
+                                        return 'Maximum OT is $hour Hours';
                                       } else {
                                         return null;
                                       }
@@ -293,7 +293,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                             fontWeight: FontWeight.bold,
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize,
                           ),
                         ),
@@ -303,13 +303,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            DateTime resultDate =
-                                await getDate(selectedDate: selectedBeforeOut);
+                            DateTime? resultDate =
+                                await getDate(selectedDate: selectedBeforeOut!);
                             if (resultDate != null) {
-                              TimeOfDay resultTime = await timePicker(
+                              TimeOfDay? resultTime = await timePicker(
                                   initialTime: TimeOfDay(
-                                      hour: selectedBeforeOut.hour,
-                                      minute: selectedBeforeOut.minute));
+                                      hour: selectedBeforeOut!.hour,
+                                      minute: selectedBeforeOut!.minute));
                               if (resultTime != null) {
                                 selectedBeforeOut = DateTime(
                                     resultDate.year,
@@ -319,13 +319,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                     resultTime.minute);
                                 beforeOutText.text =
                                     DateFormat('dd MMMM yyyy HH:mm', 'id')
-                                        .format(selectedBeforeOut);
+                                        .format(selectedBeforeOut!);
                                 if (beforeInText.text.isNotEmpty &&
                                     beforeOutText.text.isNotEmpty) {
                                   var totalOT = Jiffy(selectedBeforeOut).diff(
                                       Jiffy(selectedBeforeIn), Units.MINUTE);
                                   totalOTBeforeText.text = "$totalOT mins";
-                                  totalOTBefore = totalOT;
+                                  totalOTBefore = totalOT as int?;
                                 }
                                 setState(() {});
                               }
@@ -337,7 +337,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                               maxLines: 1,
                               controller: beforeOutText,
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value!.isEmpty) {
                                   if (beforeInText.text.isEmpty) {
                                     return null;
                                   } else {
@@ -346,12 +346,12 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                 } else {
                                   if (beforeInText.text.isNotEmpty &&
                                       beforeOutText.text.isNotEmpty) {
-                                    if (selectedBeforeOut
-                                        .isAfter(selectedBeforeIn)) {
-                                      if (totalOTBefore >
-                                          widget.schedule.maxOT) {
-                                        int hour = widget.schedule.maxOT ~/ 60;
-                                        return 'Maximum OT is ${hour} Hours';
+                                    if (selectedBeforeOut!
+                                        .isAfter(selectedBeforeIn!)) {
+                                      if (totalOTBefore! >
+                                          widget.schedule!.maxOT) {
+                                        int hour = widget.schedule!.maxOT ~/ 60;
+                                        return 'Maximum OT is $hour Hours';
                                       } else {
                                         return null;
                                       }
@@ -395,7 +395,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                             fontWeight: FontWeight.bold,
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize,
                           ),
                         ),
@@ -405,13 +405,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            DateTime resultDate =
-                                await getDate(selectedDate: selectedAfterIn);
+                            DateTime? resultDate =
+                                await getDate(selectedDate: selectedAfterIn!);
                             if (resultDate != null) {
-                              TimeOfDay resultTime = await timePicker(
+                              TimeOfDay? resultTime = await timePicker(
                                   initialTime: TimeOfDay(
-                                      hour: selectedAfterIn.hour,
-                                      minute: selectedAfterIn.minute));
+                                      hour: selectedAfterIn!.hour,
+                                      minute: selectedAfterIn!.minute));
                               if (resultTime != null) {
                                 selectedAfterIn = DateTime(
                                     resultDate.year,
@@ -421,13 +421,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                     resultTime.minute);
                                 afterInText.text =
                                     DateFormat('dd MMMM yyyy HH:mm', 'id')
-                                        .format(selectedAfterIn);
+                                        .format(selectedAfterIn!);
                                 if (afterInText.text.isNotEmpty &&
                                     afterOutText.text.isNotEmpty) {
                                   var totalOT = Jiffy(selectedAfterOut).diff(
                                       Jiffy(selectedAfterIn), Units.MINUTE);
                                   totalOTBeforeText.text = "$totalOT mins";
-                                  totalOTBefore = totalOT;
+                                  totalOTBefore = totalOT as int?;
                                 }
 
                                 setState(() {});
@@ -440,7 +440,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                               maxLines: 1,
                               controller: afterInText,
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value!.isEmpty) {
                                   if (afterOutText.text.isEmpty) {
                                     return null;
                                   } else {
@@ -449,12 +449,12 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                 } else {
                                   if (afterInText.text.isNotEmpty &&
                                       afterOutText.text.isNotEmpty) {
-                                    if (selectedAfterOut
-                                        .isAfter(selectedAfterIn)) {
-                                      if (totalOTAfter >
-                                          widget.schedule.maxOT) {
-                                        int hour = widget.schedule.maxOT ~/ 60;
-                                        return 'Maximum OT is ${hour} Hours';
+                                    if (selectedAfterOut!
+                                        .isAfter(selectedAfterIn!)) {
+                                      if (totalOTAfter! >
+                                          widget.schedule!.maxOT) {
+                                        int hour = widget.schedule!.maxOT ~/ 60;
+                                        return 'Maximum OT is $hour Hours';
                                       } else {
                                         return null;
                                       }
@@ -483,7 +483,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                             fontWeight: FontWeight.bold,
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize,
                           ),
                         ),
@@ -493,13 +493,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            DateTime resultDate =
-                                await getDate(selectedDate: selectedAfterOut);
+                            DateTime? resultDate =
+                                await getDate(selectedDate: selectedAfterOut!);
                             if (resultDate != null) {
-                              TimeOfDay resultTime = await timePicker(
+                              TimeOfDay? resultTime = await timePicker(
                                   initialTime: TimeOfDay(
-                                      hour: selectedAfterOut.hour,
-                                      minute: selectedAfterOut.minute));
+                                      hour: selectedAfterOut!.hour,
+                                      minute: selectedAfterOut!.minute));
                               if (resultTime != null) {
                                 selectedAfterOut = DateTime(
                                     resultDate.year,
@@ -509,13 +509,13 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                     resultTime.minute);
                                 afterOutText.text =
                                     DateFormat('dd MMMM yyyy HH:mm', 'id')
-                                        .format(selectedAfterOut);
+                                        .format(selectedAfterOut!);
                                 if (afterInText.text.isNotEmpty &&
                                     afterOutText.text.isNotEmpty) {
                                   var totalOT = Jiffy(selectedAfterOut).diff(
                                       Jiffy(selectedAfterIn), Units.MINUTE);
                                   totalOTAfterText.text = "$totalOT mins";
-                                  totalOTAfter = totalOT;
+                                  totalOTAfter = totalOT as int?;
                                 }
 
                                 setState(() {});
@@ -528,7 +528,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                               maxLines: 1,
                               controller: afterOutText,
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value!.isEmpty) {
                                   if (afterInText.text.isEmpty) {
                                     return null;
                                   } else {
@@ -537,12 +537,12 @@ class _OvertimeModalState extends State<OvertimeModal> {
                                 } else {
                                   if (afterInText.text.isNotEmpty &&
                                       afterOutText.text.isNotEmpty) {
-                                    if (selectedAfterOut
-                                        .isAfter(selectedAfterIn)) {
-                                      if (totalOTAfter >
-                                          widget.schedule.maxOT) {
-                                        int hour = widget.schedule.maxOT ~/ 60;
-                                        return 'Maximum OT is ${hour} Hours';
+                                    if (selectedAfterOut!
+                                        .isAfter(selectedAfterIn!)) {
+                                      if (totalOTAfter! >
+                                          widget.schedule!.maxOT) {
+                                        int hour = widget.schedule!.maxOT ~/ 60;
+                                        return 'Maximum OT is $hour Hours';
                                       } else {
                                         return null;
                                       }
@@ -594,7 +594,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        if (formKey.currentState.validate()) {
+                        if (formKey.currentState!.validate()) {
                           if (afterInText.text.isEmpty &&
                               afterOutText.text.isEmpty &&
                               beforeInText.text.isEmpty &&
@@ -649,7 +649,7 @@ class _OvertimeModalState extends State<OvertimeModal> {
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                        primary: Colors.grey,
                       ),
                       child: const Text("Reset"),
                     ),

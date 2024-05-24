@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ApprovalPage extends StatefulWidget {
   static const routeName = '/approval';
-  const ApprovalPage({Key key}) : super(key: key);
+  const ApprovalPage({Key? key}) : super(key: key);
 
   @override
   State<ApprovalPage> createState() => _ApprovalPageState();
@@ -31,7 +31,7 @@ class _ApprovalPageState extends State<ApprovalPage> {
         itemBuilder: (context, i) {
           return ListTile(
             onTap: () {},
-            title: Text(UIData.menuApproval[i].label),
+            title: Text(UIData.menuApproval[i].label!),
             trailing: const Icon(Icons.chevron_right_rounded),
           );
         },

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoadingWidget extends StatelessWidget {
-  final double size;
-  final double stroke;
-  final Color color;
-  const LoadingWidget({Key key, this.size, this.stroke, this.color})
+  final double? size;
+  final double? stroke;
+  final Color? color;
+  const LoadingWidget({Key? key, this.size, this.stroke, this.color})
       : super(key: key);
   @override
   Widget build(BuildContext context) {

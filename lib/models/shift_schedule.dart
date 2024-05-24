@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ShiftScheduleModel {
-  int id, employeeId;
-  DateTime date;
-  String code;
-  TimeOfDay timeIn, timeOut;
-  DateTime dateTimeIn, dateTimeOut;
-  int maxOT;
+  int? id, employeeId;
+  DateTime? date;
+  String? code;
+  TimeOfDay? timeIn, timeOut;
+  DateTime? dateTimeIn, dateTimeOut;
+  late int maxOT;
 
   ShiftScheduleModel.fromList(List<dynamic> map, int otMaxMinutes) {
     date = DateTime.parse(map[0]);
@@ -20,7 +20,7 @@ class ShiftScheduleModel {
     }
     dateTimeIn = DateTime.parse("${map[0]} ${map[4]}");
     dateTimeOut = DateTime.parse("${map[0]} ${map[5]}");
-    timeIn = TimeOfDay(hour: dateTimeIn.hour, minute: dateTimeIn.minute);
-    timeOut = TimeOfDay(hour: dateTimeOut.hour, minute: dateTimeOut.minute);
+    timeIn = TimeOfDay(hour: dateTimeIn!.hour, minute: dateTimeIn!.minute);
+    timeOut = TimeOfDay(hour: dateTimeOut!.hour, minute: dateTimeOut!.minute);
   }
 }

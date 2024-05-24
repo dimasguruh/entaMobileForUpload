@@ -1,5 +1,5 @@
 class HistoryModel {
-  String date, time, type, status, latitude, longitude, imageUrl, note;
+  String? date, time, type, status, latitude, longitude, imageUrl, note;
 
   HistoryModel(this.date, this.time, this.type, this.status, this.latitude,
       this.longitude, this.imageUrl, this.note);

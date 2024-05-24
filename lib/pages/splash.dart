@@ -21,19 +21,19 @@ import '../root.dart';
 
 class SplashPage extends StatefulWidget {
   static const routeName = '/splash';
-  final bool showAlert;
-  final String alertText;
-  const SplashPage({Key key, this.showAlert, this.alertText}) : super(key: key);
+  final bool? showAlert;
+  final String? alertText;
+  const SplashPage({Key? key, this.showAlert, this.alertText}) : super(key: key);
 
   @override
   State<SplashPage> createState() => _SplashPageState();
 }
 
 class _SplashPageState extends State<SplashPage> {
-  DeviceState deviceState;
-  SharedPreferences prefs;
-  String authToken, username;
-  double height, width;
+  late DeviceState deviceState;
+  late SharedPreferences prefs;
+  String? authToken, username;
+  double? height, width;
   DateTime now = DateTime.now();
   @override
   void initState() {
@@ -127,8 +127,8 @@ class _SplashPageState extends State<SplashPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: width * 0.20,
-                    height: width * 0.20,
+                    width: width! * 0.20,
+                    height: width! * 0.20,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.rectangle,
@@ -142,7 +142,7 @@ class _SplashPageState extends State<SplashPage> {
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(width * 0.05),
+                      padding: EdgeInsets.all(width! * 0.05),
                       child: SvgPicture.asset(UIImage.logo),
                     ),
                   ),

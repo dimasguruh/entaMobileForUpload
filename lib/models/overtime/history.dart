@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class OvertimeHistoryModel {
-  String code, employeeName, status;
-  int employeeId;
-  Color statusColor;
-  DateTime startDate, endDate;
+  String? code, employeeName, status;
+  int? employeeId;
+  Color? statusColor;
+  DateTime? startDate, endDate;
   List<OvertimeApproverModel> approver = [];
   List<OvertimeDetailModel> detail = [];
   OvertimeHistoryModel.fromList(List<dynamic> map) {
@@ -33,8 +33,8 @@ class OvertimeHistoryModel {
 }
 
 class OvertimeApproverModel {
-  String employeeName, level, remark, status;
-  Color statusColor;
+  String? employeeName, level, remark, status;
+  Color? statusColor;
   OvertimeApproverModel.fromList(List<dynamic> map) {
     employeeName = map[0];
     level = map[1].toString();
@@ -51,11 +51,11 @@ class OvertimeApproverModel {
 }
 
 class OvertimeDetailModel {
-  DateTime shiftDate;
-  int shiftTypeId;
-  String totalOT;
-  String shiftName, shiftTimeIn, shiftTimeOut;
-  DateTime beforeInDate, beforeOutDate, afterInDate, afterOutDate;
+  DateTime? shiftDate;
+  int? shiftTypeId;
+  late String totalOT;
+  String? shiftName, shiftTimeIn, shiftTimeOut;
+  DateTime? beforeInDate, beforeOutDate, afterInDate, afterOutDate;
 
   OvertimeDetailModel.fromList(List<dynamic> map) {
     shiftDate = DateTime.parse(map[0]);

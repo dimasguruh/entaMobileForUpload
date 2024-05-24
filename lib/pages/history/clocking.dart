@@ -20,19 +20,19 @@ import '../../utils/url.dart';
 
 class ClockingHistoryPage extends StatefulWidget {
   static const routeName = '/history/clocking';
-  const ClockingHistoryPage({Key key}) : super(key: key);
+  const ClockingHistoryPage({Key? key}) : super(key: key);
 
   @override
   State<ClockingHistoryPage> createState() => _ClockingHistoryPageState();
 }
 
 class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
-  DeviceState deviceState;
-  DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime endDate = DateTime.now();
-  List<String> status = [];
-  SharedPreferences prefs;
-  List<GeneralModel> filterStatus = [
+  late DeviceState deviceState;
+  DateTime? startDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime? endDate = DateTime.now();
+  List<String?> status = [];
+  late SharedPreferences prefs;
+  List<GeneralModel>? filterStatus = [
     GeneralModel(
       code: 'NEW',
       label: 'New',
@@ -49,7 +49,7 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
       selected: true,
     ),
   ];
-  double height;
+  late double height;
   @override
   void initState() {
     super.initState();
@@ -66,12 +66,12 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
 
   Future<void> initPage() async {
     Uri uriHistory;
-    if (prefs.getBool("secure")) {
-      uriHistory = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.clockingHistory);
+    if (prefs.getBool("secure")!) {
+      uriHistory = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.clockingHistory);
     } else {
-      uriHistory = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.clockingHistory);
+      uriHistory = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.clockingHistory);
     }
     // ignore: prefer_interpolation_to_compose_strings
     String statusText = '';
@@ -80,21 +80,21 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
     } else {
       statusText = status.join(',');
     }
-    String planText = prefs.getString("username") +
-        DateFormat('yyyy-MM-dd', 'id').format(startDate) +
-        DateFormat('yyyy-MM-dd', 'id').format(endDate) +
+    String planText = prefs.getString("username")! +
+        DateFormat('yyyy-MM-dd', 'id').format(startDate!) +
+        DateFormat('yyyy-MM-dd', 'id').format(endDate!) +
         statusText +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
-      DateFormat('yyyy-MM-dd', 'id').format(startDate),
-      DateFormat('yyyy-MM-dd', 'id').format(endDate),
+      DateFormat('yyyy-MM-dd', 'id').format(startDate!),
+      DateFormat('yyyy-MM-dd', 'id').format(endDate!),
       statusText,
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -102,7 +102,7 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
     await deviceState.actionCallAPI(
       method: 'POST',
       uri: uriHistory,
-      prefix: prefs.getString("prefix"),
+      prefix: prefs.getString("prefix")!,
       formData: parameters,
     );
   }
@@ -127,7 +127,7 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
       filterStatus = result['status'];
       startDate = result['start_date'];
       endDate = result['end_date'];
-      var x = filterStatus.where((element) => element.selected == true);
+      var x = filterStatus!.where((element) => element.selected == true);
       status.clear();
       for (var element in x) {
         status.add(element.code);
@@ -195,10 +195,10 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
                       deviceState.clockingHistoryList[i].statusColor,
                   child: Center(
                     child: Icon(
-                      deviceState.clockingHistoryList[i].type.toUpperCase() ==
+                      deviceState.clockingHistoryList[i].type!.toUpperCase() ==
                               'IN'
                           ? Icons.arrow_upward
-                          : deviceState.clockingHistoryList[i].type
+                          : deviceState.clockingHistoryList[i].type!
                                       .toUpperCase() ==
                                   'OUT'
                               ? Icons.arrow_downward
@@ -225,22 +225,22 @@ class _ClockingHistoryPageState extends State<ClockingHistoryPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        deviceState.clockingHistoryList[i].time,
+                        deviceState.clockingHistoryList[i].time!,
                         style: TextStyle(
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .subtitle2
+                                .subtitle2!
                                 .fontSize),
                       ),
                       Text(
-                        deviceState.clockingHistoryList[i].status,
+                        deviceState.clockingHistoryList[i].status!,
                         style: TextStyle(
                             color:
                                 deviceState.clockingHistoryList[i].statusColor,
                             fontStyle: FontStyle.italic,
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize),
                       )
                     ],

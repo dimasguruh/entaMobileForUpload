@@ -5,9 +5,9 @@ import 'package:skeleton_text/skeleton_text.dart';
 import '../utils/images.dart';
 
 class AvatarWidget extends StatefulWidget {
-  final String url;
-  final double width, height;
-  const AvatarWidget({Key key, this.url, this.width, this.height})
+  final String? url;
+  final double? width, height;
+  const AvatarWidget({Key? key, this.url, this.width, this.height})
       : super(key: key);
 
   @override
@@ -18,7 +18,7 @@ class _AvatarWidgetState extends State<AvatarWidget> {
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: widget.url,
+        imageUrl: widget.url!,
         imageBuilder: (context, imageProvider) => Container(
               height: widget.height,
               width: widget.width,

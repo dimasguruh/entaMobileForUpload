@@ -26,11 +26,11 @@ class UIFunction {
   }
 
   static void showToastMessage(
-      {BuildContext context,
-      bool isError,
-      String title,
-      String message,
-      String position}) async {
+      {required BuildContext context,
+      required bool isError,
+      String? title,
+      String? message,
+      String? position}) async {
     Flushbar(
             margin: const EdgeInsets.all(8),
             borderRadius: BorderRadius.circular(8),
@@ -49,14 +49,14 @@ class UIFunction {
   }
 
   static Future<ResponseAPI> callAPIDIO(
-      {String url,
-      String method,
+      {required String url,
+      String? method,
       dynamic formData,
-      Map header,
+      Map? header,
       isToken = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    Map<String, String> headers = <String, String>{};
-    String deviceId = prefs.getString('device_id');
+    Map<String, String?> headers = <String, String?>{};
+    String? deviceId = prefs.getString('device_id');
     String token = prefs.getString('token') ?? "";
     String companyCode = prefs.getString('company_code') ?? "";
     String username = '';
@@ -159,39 +159,39 @@ class UIFunction {
       FirebaseCrashlytics.instance.setCustomKey('username', username);
       if (e.response != null) {
         FirebaseCrashlytics.instance
-            .setCustomKey('status code', e.response.statusCode);
+            .setCustomKey('status code', e.response!.statusCode!);
 
         FirebaseCrashlytics.instance
-            .setCustomKey('response message', e.response.statusMessage);
+            .setCustomKey('response message', e.response!.statusMessage!);
       } else {
         FirebaseCrashlytics.instance.setCustomKey('status code', 0);
         FirebaseCrashlytics.instance.setCustomKey('response message', '-');
       }
 
-      var message = '';
-      int statusCode = 0;
+      String? message = '';
+      int? statusCode = 0;
       if (e.response != null) {
-        statusCode = e.response.statusCode;
-        result['statusCode'] = e.response.statusCode;
+        statusCode = e.response!.statusCode;
+        result['statusCode'] = e.response!.statusCode;
         if (statusCode == 404) {
-          message = e.response.statusMessage;
+          message = e.response!.statusMessage;
         } else {
           // log(e.response.data.toString());
-          if (e.response.data.isNotEmpty) {
+          if (e.response!.data.isNotEmpty) {
             // if (e.response.data.containsKey('ExceptionMessage')) {
             // message = e.response.data['ExceptionMessage'];
             // } else {
-            message = e.response.data.toString();
+            message = e.response!.data.toString();
             // }
           } else {
-            message = e.response.statusMessage;
+            message = e.response!.statusMessage;
           }
         }
       } else {
         statusCode = 0;
         message = e.message;
       }
-      FirebaseCrashlytics.instance.setCustomKey('message', message);
+      FirebaseCrashlytics.instance.setCustomKey('message', message!);
       await FirebaseCrashlytics.instance.recordError(
         e,
         stacktrace,
@@ -208,7 +208,7 @@ class UIFunction {
     }
   }
 
-  static Future<void> showDialogLoadingBlank({BuildContext context}) async {
+  static Future<Future<Object?>> showDialogLoadingBlank({required BuildContext context}) async {
     return showGeneralDialog(
       context: context,
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
@@ -233,7 +233,7 @@ class UIFunction {
     );
   }
 
-  static Future<void> showDialogLoading({BuildContext context}) async =>
+  static Future<void> showDialogLoading({required BuildContext context}) async =>
       showGeneralDialog(
         context: context,
         pageBuilder: (BuildContext buildContext, Animation<double> animation,
@@ -295,7 +295,7 @@ class UIFunction {
   }
 
   static double calculateDistance(
-      {double lat1, double lon1, double lat2, double lon2}) {
+      {required double lat1, required double lon1, required double lat2, required double lon2}) {
     var p = 0.017453292519943295;
     var a = 0.5 -
         math.cos((lat2 - lat1) * p) / 2 +
@@ -366,7 +366,7 @@ class UIFunction {
   }
 
   static List<DateTime> getDaysInBetween(
-      {DateTime startDate, DateTime endDate}) {
+      {required DateTime startDate, required DateTime endDate}) {
     List<DateTime> days = [];
     for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
       days.add(startDate.add(Duration(days: i)));

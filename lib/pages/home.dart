@@ -21,10 +21,10 @@ import '../utils/colors.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home';
-  final bool showAlert;
-  final String alertText;
-  final Map userInfo;
-  const HomePage({Key key, this.showAlert, this.alertText, this.userInfo})
+  final bool? showAlert;
+  final String? alertText;
+  final Map? userInfo;
+  const HomePage({Key? key, this.showAlert, this.alertText, this.userInfo})
       : super(key: key);
 
   @override
@@ -33,8 +33,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // String _initialName = "";
-  DeviceState deviceState;
-  double width, height;
+  late DeviceState deviceState;
+  double? width, height;
   @override
   void initState() {
     super.initState();
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initPage() async {
-    if (widget.showAlert) {
+    if (widget.showAlert!) {
       Flushbar(
         margin: const EdgeInsets.all(8),
         borderRadius: BorderRadius.circular(8),
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> checkPermission({int type}) async {
+  Future<void> checkPermission({int? type}) async {
     if (deviceState.permissionCamera == PermissionStatus.granted) {
       if (deviceState.permissionLocation == PermissionStatus.granted) {
         log("oke 1");
@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> openPage({int type}) async {
+  Future<void> openPage({int? type}) async {
     // ignore: prefer_typing_uninitialized_variables
     var result;
     if (type == 0) {
@@ -266,7 +266,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Container(
               width: width,
-              height: width * 0.18,
+              height: width! * 0.18,
               color: UIColor.primaryColor,
             ),
             Column(
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildCardAccount() {
     return Padding(
       padding: EdgeInsets.only(
-          top: width * 0.08, left: width * 0.04, right: width * 0.04),
+          top: width! * 0.08, left: width! * 0.04, right: width! * 0.04),
       child: Card(
         child: Row(
           children: <Widget>[
@@ -300,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.only(top: 2, bottom: 2),
                 ),
                 Text(
-                  deviceState.myAuth.employeeName,
+                  deviceState.myAuth!.employeeName!,
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -312,14 +312,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildAvatar() {
-    if (deviceState.myAuth.photoProfile != null &&
-        deviceState.myAuth.photoProfile != "") {
-      Uint8List bytes = base64Decode(deviceState.myAuth.photoProfile);
+    if (deviceState.myAuth!.photoProfile != null &&
+        deviceState.myAuth!.photoProfile != "") {
+      Uint8List bytes = base64Decode(deviceState.myAuth!.photoProfile!);
       return Padding(
         padding: const EdgeInsets.all(10),
         child: Container(
-          width: width * 0.15,
-          height: width * 0.15,
+          width: width! * 0.15,
+          height: width! * 0.15,
           decoration: const BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: <BoxShadow>[
@@ -391,7 +391,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildCardMainFeature() {
     return Padding(
         padding: EdgeInsets.only(
-            top: width * 0.05, left: width * 0.15, right: width * 0.15),
+            top: width! * 0.05, left: width! * 0.15, right: width! * 0.15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -430,7 +430,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget builBtnTapInOut(
-      {int index, String title, IconData icon, Color iconColor}) {
+      {int? index, required String title, IconData? icon, Color? iconColor}) {
     return InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -464,7 +464,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              height: width * 0.18,
+              height: width! * 0.18,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black12),

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class FilterOvertimeModal extends StatefulWidget {
-  final DateTime startDate, endDate;
-  final List<GeneralModel> filterStatus;
+  final DateTime? startDate, endDate;
+  final List<GeneralModel>? filterStatus;
   const FilterOvertimeModal(
-      {Key key, this.startDate, this.endDate, this.filterStatus})
+      {Key? key, this.startDate, this.endDate, this.filterStatus})
       : super(key: key);
 
   @override
@@ -16,9 +16,9 @@ class FilterOvertimeModal extends StatefulWidget {
 }
 
 class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now();
-  List<GeneralModel> filterStatus = [];
+  DateTime? startDate = DateTime.now();
+  DateTime? endDate = DateTime.now();
+  List<GeneralModel>? filterStatus = [];
   @override
   void initState() {
     super.initState();
@@ -36,23 +36,23 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
   }
 
   Future<void> dateTimeRangePicker() async {
-    DateTimeRange picked = await showDateRangePicker(
+    DateTimeRange? picked = await showDateRangePicker(
       context: context,
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             brightness: Brightness.light,
             colorScheme:
                 ColorScheme.light(primary: Theme.of(context).primaryColor),
           ),
-          child: child,
+          child: child!,
         );
       },
       firstDate: DateTime(DateTime.now().year - 2),
       lastDate: DateTime(DateTime.now().year + 2),
       initialDateRange: DateTimeRange(
-        end: endDate,
-        start: startDate,
+        end: endDate!,
+        start: startDate!,
       ),
     );
     if (picked == null) {
@@ -84,19 +84,19 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
           },
           child: Icon(
             Icons.close,
-            size: Theme.of(context).primaryTextTheme.headline6.fontSize + 1,
+            size: Theme.of(context).primaryTextTheme.headline6!.fontSize! + 1,
           ),
         ),
         middle: Text(
           "Filter",
           style: TextStyle(
             fontWeight: FontWeight.normal,
-            fontSize: Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+            fontSize: Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
           ),
         ),
         trailing: InkWell(
           onTap: () {
-            for (var element in filterStatus) {
+            for (var element in filterStatus!) {
               element.selected = true;
             }
             startDate = DateTime.now().subtract(const Duration(days: 30));
@@ -108,7 +108,7 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
             "Reset",
             style: TextStyle(
               color: Theme.of(context).primaryColor,
-              fontSize: Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+              fontSize: Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -135,16 +135,16 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                       ),
                     ),
                     subtitle: Text(
-                      "${DateFormat('dd MMMM yyyy', 'id').format(startDate)} - ${DateFormat('dd MMMM yyyy', 'id').format(endDate)}",
+                      "${DateFormat('dd MMMM yyyy', 'id').format(startDate!)} - ${DateFormat('dd MMMM yyyy', 'id').format(endDate!)}",
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle2
+                            .subtitle2!
                             .fontSize,
                       ),
                     ),
@@ -160,7 +160,7 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         fontWeight: FontWeight.w600,
                       ),
@@ -169,30 +169,30 @@ class _FilterOvertimeModalState extends State<FilterOvertimeModal> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filterStatus.length,
+                    itemCount: filterStatus!.length,
                     itemBuilder: (BuildContext context, int i) {
                       return InkWell(
                         onTap: () {
-                          filterStatus[i].selected = !filterStatus[i].selected;
+                          filterStatus![i].selected = !filterStatus![i].selected!;
                           setState(() {});
                         },
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
-                                filterStatus[i].label,
+                                filterStatus![i].label!,
                                 style: TextStyle(
                                   fontSize: Theme.of(context)
                                       .primaryTextTheme
-                                      .subtitle1
+                                      .subtitle1!
                                       .fontSize,
                                 ),
                               ),
                             ),
                             Checkbox(
-                              value: filterStatus[i].selected,
-                              onChanged: (bool value) {
-                                filterStatus[i].selected = value;
+                              value: filterStatus![i].selected,
+                              onChanged: (bool? value) {
+                                filterStatus![i].selected = value;
 
                                 setState(() {});
                               },

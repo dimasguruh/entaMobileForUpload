@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class LeaveHistoryModel {
-  String code, status, leaveType, remark, submittedBy;
-  Color statusColor;
-  DateTime startDate, endDate, submittedAt;
+  String? code, status, leaveType, remark, submittedBy;
+  Color? statusColor;
+  DateTime? startDate, endDate, submittedAt;
   List<DateTime> leaveDate = [];
-  double totalLeave;
+  double? totalLeave;
   List<OvertimeApproverModel> approver = [];
 
   LeaveHistoryModel.fromList(List<dynamic> map) {
@@ -37,8 +37,8 @@ class LeaveHistoryModel {
 }
 
 class OvertimeApproverModel {
-  String employeeName, level, remark, status;
-  Color statusColor;
+  String? employeeName, level, remark, status;
+  Color? statusColor;
   OvertimeApproverModel.fromList(List<dynamic> map) {
     employeeName = map[0];
     level = map[1].toString();

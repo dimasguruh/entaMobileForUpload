@@ -30,12 +30,12 @@ import 'utils/url.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/home';
-  final bool showAlert;
-  final String alertText;
-  final String route;
+  final bool? showAlert;
+  final String? alertText;
+  final String? route;
   final dynamic args;
   const MainPage({
-    Key key,
+    Key? key,
     this.alertText,
     this.showAlert,
     this.route,
@@ -47,12 +47,12 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double width, height;
-  DeviceState deviceState;
-  Uint8List photoProfile;
+  double? width, height;
+  late DeviceState deviceState;
+  late Uint8List photoProfile;
   var snapController = SnappingSheetController();
   final ScrollController scrollController = ScrollController();
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   String greeting = '';
   loc.Location location = loc.Location();
 
@@ -81,28 +81,28 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> checkToken() async {
     Uri uriCheckToken, uriLeaveTypeGroup;
-    if (prefs.getBool("secure")) {
-      uriCheckToken = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.checkToken);
-      uriLeaveTypeGroup = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveTypeGroup);
+    if (prefs.getBool("secure")!) {
+      uriCheckToken = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.checkToken);
+      uriLeaveTypeGroup = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveTypeGroup);
     } else {
-      uriCheckToken = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.checkToken);
-      uriLeaveTypeGroup = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveTypeGroup);
+      uriCheckToken = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.checkToken);
+      uriLeaveTypeGroup = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveTypeGroup);
     }
-    String planText = prefs.getString("username") +
+    String planText = prefs.getString("username")! +
         'LeaveGroup' +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
       'LeaveGroup',
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -110,7 +110,7 @@ class _MainPageState extends State<MainPage> {
     ResponseAPI result = await deviceState.actionCallAPI(
       method: 'POST',
       uri: uriCheckToken,
-      prefix: prefs.getString("prefix"),
+      prefix: prefs.getString("prefix")!,
     );
     if (result.code == 401) {
       Map<String, dynamic> resultx = <String, dynamic>{};
@@ -138,7 +138,7 @@ class _MainPageState extends State<MainPage> {
       deviceState.actionCallAPI(
         method: 'POST',
         uri: uriLeaveTypeGroup,
-        prefix: prefs.getString("prefix"),
+        prefix: prefs.getString("prefix")!,
         formData: parameters,
       );
     }
@@ -146,7 +146,7 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> initPage() async {
     await checkToken();
-    if (widget.showAlert) {
+    if (widget.showAlert!) {
       UIFunction.showToastMessage(
         context: context,
         isError: false,
@@ -154,9 +154,9 @@ class _MainPageState extends State<MainPage> {
         message: widget.alertText,
       );
     }
-    if (deviceState.myAuth.photoProfile != null &&
-        deviceState.myAuth.photoProfile != "") {
-      photoProfile = base64Decode(deviceState.myAuth.photoProfile);
+    if (deviceState.myAuth!.photoProfile != null &&
+        deviceState.myAuth!.photoProfile != "") {
+      photoProfile = base64Decode(deviceState.myAuth!.photoProfile!);
     }
   }
 
@@ -176,7 +176,7 @@ class _MainPageState extends State<MainPage> {
       enableDrag: false,
       backgroundColor: Colors.white,
       builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height * 0.575),
+        constraints: BoxConstraints(maxHeight: height! * 0.575),
         child: SafeArea(
           top: false,
           child: Padding(
@@ -193,7 +193,7 @@ class _MainPageState extends State<MainPage> {
                           onClickClocking(type: 0);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          primary: Colors.green,
                         ),
                         child: const Text("Tap In"),
                       ),
@@ -207,7 +207,7 @@ class _MainPageState extends State<MainPage> {
                           onClickClocking(type: 1);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          primary: Colors.red,
                         ),
                         child: const Text("Tap Out"),
                       ),
@@ -222,7 +222,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Future<void> onClickClocking({int type}) async {
+  Future<void> onClickClocking({int? type}) async {
     if (deviceState.permissionCamera == PermissionStatus.permanentlyDenied ||
         deviceState.permissionLocation == PermissionStatus.permanentlyDenied) {
       UIFunction.showToastMessage(
@@ -237,7 +237,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Future<void> checkPermission({int type}) async {
+  Future<void> checkPermission({int? type}) async {
     if (deviceState.permissionCamera == PermissionStatus.granted) {
       if (deviceState.permissionLocation == PermissionStatus.granted) {
         if (type != null) {
@@ -291,7 +291,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Future<void> openPage({int type}) async {
+  Future<void> openPage({int? type}) async {
     Navigator.pop(context);
     // ignore: prefer_typing_uninitialized_variables
     var result;
@@ -389,7 +389,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void onSuccessLogout({String msg}) {
+  void onSuccessLogout({String? msg}) {
     Navigator.pushReplacementNamed(
       context,
       LoginPage.routeName,
@@ -410,7 +410,7 @@ class _MainPageState extends State<MainPage> {
             Text(
               UIData.appVersion,
               style: TextStyle(
-                fontSize: Theme.of(context).primaryTextTheme.caption.fontSize,
+                fontSize: Theme.of(context).primaryTextTheme.caption!.fontSize,
               ),
             ),
           ],
@@ -443,10 +443,10 @@ class _MainPageState extends State<MainPage> {
         body: Stack(
           children: [
             Container(
-              height: height * 0.4,
+              height: height! * 0.4,
               padding: EdgeInsets.symmetric(
                 horizontal: 10,
-                vertical: height * 0.05,
+                vertical: height! * 0.05,
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -466,9 +466,9 @@ class _MainPageState extends State<MainPage> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.only(top: height * 0.15),
+                      padding: EdgeInsets.only(top: height! * 0.15),
                       child: Container(
-                        height: height * 0.7,
+                        height: height! * 0.7,
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -483,7 +483,7 @@ class _MainPageState extends State<MainPage> {
                               deviceState.validationCode == 200
                                   ? Center(
                                       child: SizedBox(
-                                        height: height *
+                                        height: height! *
                                             0.7 *
                                             deviceState.logoHeight,
                                         child: Opacity(
@@ -526,7 +526,7 @@ class _MainPageState extends State<MainPage> {
                                       style: TextStyle(
                                         fontSize: Theme.of(context)
                                             .primaryTextTheme
-                                            .subtitle1
+                                            .subtitle1!
                                             .fontSize,
                                         fontWeight: FontWeight.bold,
                                         color: Theme.of(context).disabledColor,
@@ -556,8 +556,8 @@ class _MainPageState extends State<MainPage> {
         children: [
           SkeletonAnimation(
             child: Container(
-              width: width * 0.14,
-              height: width * 0.14,
+              width: width! * 0.14,
+              height: width! * 0.14,
               decoration: BoxDecoration(
                 color: Theme.of(context).dividerColor,
                 shape: BoxShape.circle,
@@ -578,7 +578,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               SkeletonAnimation(
                 child: Container(
-                  height: Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                  height: Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                   decoration: BoxDecoration(
                     color: Theme.of(context).dividerColor,
                   ),
@@ -589,7 +589,7 @@ class _MainPageState extends State<MainPage> {
               ),
               SkeletonAnimation(
                 child: Container(
-                  height: Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                  height: Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                   decoration: BoxDecoration(
                     color: Theme.of(context).dividerColor,
                   ),
@@ -620,14 +620,14 @@ class _MainPageState extends State<MainPage> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize:
-                      Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                      Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                 ),
               ),
               const SizedBox(
                 height: 7.5,
               ),
               Text(
-                deviceState.employeeName,
+                deviceState.employeeName!,
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -640,11 +640,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget buildAvatar() {
-    if (deviceState.myAuth.photoProfile != null &&
-        deviceState.myAuth.photoProfile != "") {
+    if (deviceState.myAuth!.photoProfile != null &&
+        deviceState.myAuth!.photoProfile != "") {
       return Container(
-        width: width * 0.15,
-        height: width * 0.15,
+        width: width! * 0.15,
+        height: width! * 0.15,
         decoration: const BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: <BoxShadow>[
@@ -691,8 +691,8 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 children: [
                   Container(
-                    width: width * 0.14,
-                    height: width * 0.14,
+                    width: width! * 0.14,
+                    height: width! * 0.14,
                     decoration: BoxDecoration(
                       color: Theme.of(context).dividerColor,
                       borderRadius: BorderRadius.circular(5),
@@ -710,7 +710,7 @@ class _MainPageState extends State<MainPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Container(
                       height:
-                          Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+                          Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
                       decoration: BoxDecoration(
                         color: Theme.of(context).dividerColor,
                       ),
@@ -758,7 +758,7 @@ class _MainPageState extends State<MainPage> {
                       showClocking();
                     } else {
                       var result = await Navigator.pushNamed(
-                          context, UIData.menuFeature[i].route);
+                          context, UIData.menuFeature[i].route!);
                       if (result != null) {
                         UIFunction.showToastMessage(
                             context: context,
@@ -792,14 +792,14 @@ class _MainPageState extends State<MainPage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 2.5),
                         child: Text(
-                          UIData.menuFeature[i].label,
+                          UIData.menuFeature[i].label!,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: Theme.of(context)
                                 .primaryTextTheme
-                                .caption
+                                .caption!
                                 .fontSize,
                           ),
                         ),
@@ -813,14 +813,14 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Widget buildClocking({int i}) {
+  Widget buildClocking({int? i}) {
     if (deviceState.loadingValidation) {
       return SkeletonAnimation(
         child: Column(
           children: [
             Container(
-              width: width * 0.14,
-              height: width * 0.14,
+              width: width! * 0.14,
+              height: width! * 0.14,
               decoration: BoxDecoration(
                 color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(5),
@@ -837,7 +837,7 @@ class _MainPageState extends State<MainPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Container(
-                height: Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+                height: Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
                 decoration: BoxDecoration(
                   color: Theme.of(context).dividerColor,
                 ),
@@ -851,8 +851,8 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             Container(
-              width: width * 0.14,
-              height: width * 0.14,
+              width: width! * 0.14,
+              height: width! * 0.14,
               decoration: BoxDecoration(
                 color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(5),
@@ -869,7 +869,7 @@ class _MainPageState extends State<MainPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Container(
-                height: Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+                height: Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
                 decoration: BoxDecoration(
                   color: Theme.of(context).dividerColor,
                 ),
@@ -892,7 +892,7 @@ class _MainPageState extends State<MainPage> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              UIData.menuFeature[i].icon,
+              UIData.menuFeature[i!].icon,
               color: Theme.of(context).primaryColor,
               size: 28,
             ),
@@ -903,12 +903,12 @@ class _MainPageState extends State<MainPage> {
           Padding(
             padding: const EdgeInsets.only(top: 2.5),
             child: Text(
-              UIData.menuFeature[i].label,
+              UIData.menuFeature[i].label!,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: Theme.of(context).primaryTextTheme.caption.fontSize,
+                fontSize: Theme.of(context).primaryTextTheme.caption!.fontSize,
               ),
             ),
           )
@@ -917,7 +917,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Widget buildOvertime({int i}) {
+  Widget buildOvertime({required int i}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -942,12 +942,12 @@ class _MainPageState extends State<MainPage> {
         Padding(
           padding: const EdgeInsets.only(top: 2.5),
           child: Text(
-            UIData.menuFeature[i].label,
+            UIData.menuFeature[i].label!,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: Theme.of(context).primaryTextTheme.caption.fontSize,
+              fontSize: Theme.of(context).primaryTextTheme.caption!.fontSize,
             ),
           ),
         )
@@ -955,7 +955,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget buildLeave({int i}) {
+  Widget buildLeave({required int i}) {
     // if (deviceState.loadingLeaveGroup) {
     //   return SkeletonAnimation(
     //     child: Column(
@@ -1045,12 +1045,12 @@ class _MainPageState extends State<MainPage> {
         Padding(
           padding: const EdgeInsets.only(top: 2.5),
           child: Text(
-            UIData.menuFeature[i].label,
+            UIData.menuFeature[i].label!,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: Theme.of(context).primaryTextTheme.caption.fontSize,
+              fontSize: Theme.of(context).primaryTextTheme.caption!.fontSize,
             ),
           ),
         )
@@ -1059,7 +1059,7 @@ class _MainPageState extends State<MainPage> {
     // }
   }
 
-  Widget buildHistory({int i}) {
+  Widget buildHistory({required int i}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -1084,12 +1084,12 @@ class _MainPageState extends State<MainPage> {
         Padding(
           padding: const EdgeInsets.only(top: 2.5),
           child: Text(
-            UIData.menuFeature[i].label,
+            UIData.menuFeature[i].label!,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: Theme.of(context).primaryTextTheme.caption.fontSize,
+              fontSize: Theme.of(context).primaryTextTheme.caption!.fontSize,
             ),
           ),
         )

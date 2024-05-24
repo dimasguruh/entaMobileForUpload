@@ -19,19 +19,19 @@ import '../../utils/url.dart';
 
 class LeaveHistoryPage extends StatefulWidget {
   static const routeName = '/history/leave';
-  const LeaveHistoryPage({Key key}) : super(key: key);
+  const LeaveHistoryPage({Key? key}) : super(key: key);
 
   @override
   State<LeaveHistoryPage> createState() => _LeaveHistoryPageState();
 }
 
 class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
-  DeviceState deviceState;
-  DateTime startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime endDate = DateTime.now();
-  List<String> status = [];
-  SharedPreferences prefs;
-  List<GeneralModel> filterStatus = [
+  late DeviceState deviceState;
+  DateTime? startDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime? endDate = DateTime.now();
+  List<String?> status = [];
+  late SharedPreferences prefs;
+  List<GeneralModel>? filterStatus = [
     GeneralModel(
       code: 'NEW',
       label: 'New',
@@ -48,8 +48,8 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
       selected: true,
     ),
   ];
-  double height;
-  GeneralModel leaveType = GeneralModel(id: 0, label: 'All');
+  late double height;
+  GeneralModel? leaveType = GeneralModel(id: 0, label: 'All');
   @override
   void initState() {
     super.initState();
@@ -66,37 +66,37 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
 
   Future<void> initPage() async {
     Uri uriHistory;
-    if (prefs.getBool("secure")) {
-      uriHistory = Uri.https(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveHistory);
+    if (prefs.getBool("secure")!) {
+      uriHistory = Uri.https(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveHistory);
     } else {
-      uriHistory = Uri.http(prefs.getString("host"),
-          prefs.getString("prefix") + UIUrl.leaveHistory);
+      uriHistory = Uri.http(prefs.getString("host")!,
+          prefs.getString("prefix")! + UIUrl.leaveHistory);
     }
     String leaveTypeId = '';
-    if (leaveType.id == 0) {
+    if (leaveType!.id == 0) {
       leaveTypeId = '0';
     } else {
-      leaveTypeId = leaveType.id.toString();
+      leaveTypeId = leaveType!.id.toString();
     }
     // ignore: prefer_interpolation_to_compose_strings
-    String planText = prefs.getString("username") +
+    String planText = prefs.getString("username")! +
         leaveTypeId +
-        DateFormat('yyyy-MM-dd', 'id').format(startDate) +
-        DateFormat('yyyy-MM-dd', 'id').format(endDate) +
+        DateFormat('yyyy-MM-dd', 'id').format(startDate!) +
+        DateFormat('yyyy-MM-dd', 'id').format(endDate!) +
         status.join(',') +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     String secretKey = UIFunction.encodeSha1(planText);
     String parameters = json.encode([
       prefs.getString("username"),
       leaveTypeId,
-      DateFormat('yyyy-MM-dd', 'id').format(startDate),
-      DateFormat('yyyy-MM-dd', 'id').format(endDate),
+      DateFormat('yyyy-MM-dd', 'id').format(startDate!),
+      DateFormat('yyyy-MM-dd', 'id').format(endDate!),
       status.join(','),
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       secretKey
     ]);
@@ -104,7 +104,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
     await deviceState.actionCallAPI(
       method: 'POST',
       uri: uriHistory,
-      prefix: prefs.getString("prefix"),
+      prefix: prefs.getString("prefix")!,
       formData: parameters,
     );
   }
@@ -131,7 +131,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
       startDate = result['start_date'];
       endDate = result['end_date'];
       leaveType = result['leave_type'];
-      var x = filterStatus.where((element) => element.selected == true);
+      var x = filterStatus!.where((element) => element.selected == true);
       status.clear();
       for (var element in x) {
         status.add(element.code);
@@ -141,7 +141,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
     }
   }
 
-  Future<void> showDetail({LeaveHistoryModel data}) async {
+  Future<void> showDetail({LeaveHistoryModel? data}) async {
     FocusScope.of(context).requestFocus(FocusNode());
     await showMaterialModalBottomSheet(
       context: context,
@@ -172,7 +172,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -210,17 +210,17 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.code,
+                                  data!.code!,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -237,17 +237,17 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  "${DateFormat('dd MMM yyyy', 'id').format(data.startDate)} - ${DateFormat('dd MMM yyyy', 'id').format(data.endDate)}",
+                                  "${DateFormat('dd MMM yyyy', 'id').format(data.startDate!)} - ${DateFormat('dd MMM yyyy', 'id').format(data.endDate!)}",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -264,17 +264,17 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.leaveType,
+                                  data.leaveType!,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -291,17 +291,17 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.submittedBy,
+                                  data.submittedBy!,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -318,19 +318,19 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
                                   DateFormat('dd MMM yyyy', 'id').format(
-                                    data.submittedAt,
+                                    data.submittedAt!,
                                   ),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -347,18 +347,18 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                   style: TextStyle(
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .caption
+                                        .caption!
                                         .fontSize,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  data.status,
+                                  data.status!,
                                   style: TextStyle(
                                     color: data.statusColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -383,7 +383,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -402,34 +402,34 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                           const EdgeInsets.symmetric(
                                               horizontal: 10),
                                       title: Text(
-                                        data.approver[i].employeeName,
+                                        data.approver[i].employeeName!,
                                         style: TextStyle(
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .subtitle1
+                                              .subtitle1!
                                               .fontSize,
                                         ),
                                       ),
                                       subtitle: Text(
                                         data.approver[i].remark == ''
                                             ? '-'
-                                            : data.approver[i].remark,
+                                            : data.approver[i].remark!,
                                         style: TextStyle(
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .caption
+                                              .caption!
                                               .fontSize,
                                         ),
                                       ),
                                       trailing: Text(
-                                        data.approver[i].status,
+                                        data.approver[i].status!,
                                         style: TextStyle(
                                           color: data.approver[i].statusColor,
                                           fontStyle: FontStyle.italic,
                                           fontWeight: FontWeight.bold,
                                           fontSize: Theme.of(context)
                                               .primaryTextTheme
-                                              .caption
+                                              .caption!
                                               .fontSize,
                                         ),
                                       ),
@@ -461,7 +461,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: Theme.of(context)
                                         .primaryTextTheme
-                                        .subtitle1
+                                        .subtitle1!
                                         .fontSize,
                                   ),
                                 ),
@@ -566,7 +566,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                 title: Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    deviceState.leaveHistoryList[i].code,
+                    deviceState.leaveHistoryList[i].code!,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -575,20 +575,20 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(deviceState.leaveHistoryList[i].leaveType),
+                      Text(deviceState.leaveHistoryList[i].leaveType!),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "${DateFormat('dd MMM yyyy', 'id').format(deviceState.leaveHistoryList[i].startDate)} - ${DateFormat('dd MMM yyyy', 'id').format(deviceState.leaveHistoryList[i].endDate)}",
+                            "${DateFormat('dd MMM yyyy', 'id').format(deviceState.leaveHistoryList[i].startDate!)} - ${DateFormat('dd MMM yyyy', 'id').format(deviceState.leaveHistoryList[i].endDate!)}",
                             style: TextStyle(
                                 fontSize: Theme.of(context)
                                     .primaryTextTheme
-                                    .subtitle2
+                                    .subtitle2!
                                     .fontSize),
                           ),
                           Text(
-                            deviceState.leaveHistoryList[i].status,
+                            deviceState.leaveHistoryList[i].status!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -597,7 +597,7 @@ class _LeaveHistoryPageState extends State<LeaveHistoryPage> {
                                 fontStyle: FontStyle.italic,
                                 fontSize: Theme.of(context)
                                     .primaryTextTheme
-                                    .caption
+                                    .caption!
                                     .fontSize),
                           )
                         ],

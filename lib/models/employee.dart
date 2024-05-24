@@ -1,7 +1,7 @@
 class EmployeeModel {
-  int employeeId;
-  String name, photoUrl;
-  bool isSelected = false;
+  int? employeeId;
+  String? name, photoUrl;
+  bool? isSelected = false;
 
   EmployeeModel({this.employeeId, this.name, this.photoUrl, this.isSelected});
 

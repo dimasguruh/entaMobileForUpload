@@ -5,14 +5,14 @@ import 'package:provider/provider.dart';
 
 class HistoryPage extends StatefulWidget {
   static const routeName = '/history';
-  const HistoryPage({Key key}) : super(key: key);
+  const HistoryPage({Key? key}) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  DeviceState deviceState;
+  late DeviceState deviceState;
   @override
   void initState() {
     super.initState();
@@ -47,10 +47,10 @@ class _HistoryPageState extends State<HistoryPage> {
             child: ListTile(
               onTap: () {
                 if (UIData.menuHistory[i].route != null) {
-                  Navigator.pushNamed(context, UIData.menuHistory[i].route);
+                  Navigator.pushNamed(context, UIData.menuHistory[i].route!);
                 }
               },
-              title: Text(UIData.menuHistory[i].label),
+              title: Text(UIData.menuHistory[i].label!),
               trailing: const Icon(Icons.chevron_right_rounded),
             ),
           );

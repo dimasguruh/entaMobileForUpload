@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class GeneralModel {
-  int id;
-  String label, message, image, code, title, subtitle;
-  String route, url, path;
-  IconData icon;
-  bool visible, success, selected;
-  bool checkLeaveBalance;
+  int? id;
+  String? label, message, image, code, title, subtitle;
+  String? route, url, path;
+  IconData? icon;
+  bool? visible, success, selected;
+  bool? checkLeaveBalance;
   dynamic args;
-  List<GeneralModel> children;
+  List<GeneralModel>? children;
 
   GeneralModel(
       {this.id,

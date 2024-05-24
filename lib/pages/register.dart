@@ -19,24 +19,24 @@ import '../utils/strings.dart';
 
 class RegisterPage extends StatefulWidget {
   static const routeName = '/register';
-  const RegisterPage({Key key}) : super(key: key);
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  DeviceState deviceState;
+  late DeviceState deviceState;
   final formRegisterKey = GlobalKey<FormState>();
   final FocusNode focusCompanyCode = FocusNode();
   final FocusNode focusHost = FocusNode();
   final TextEditingController _usernameText = TextEditingController();
   final TextEditingController _companyCodeText = TextEditingController();
   final TextEditingController _hostText = TextEditingController();
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   bool isLoading = false;
-  String _host;
-  double height, width;
+  late String _host;
+  double? height, width;
   var _deviceId, _planText, _secretKey, _parameters, responseAPI;
 
   @override
@@ -94,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void onSuccessCalAPI({ResponseAPI result}) {
+  void onSuccessCalAPI({required ResponseAPI result}) {
     Navigator.pop(context);
     Uri uri = Uri.parse(_host);
     if (result.success) {
@@ -175,16 +175,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(top: width * 0.2),
+                        padding: EdgeInsets.only(top: width! * 0.2),
                         child: SvgPicture.asset(
                           UIImage.logo,
-                          width: width * 0.2,
-                          height: width * 0.2,
+                          width: width! * 0.2,
+                          height: width! * 0.2,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                            top: width * 0.1, bottom: width * 0.05),
+                            top: width! * 0.1, bottom: width! * 0.05),
                         child: const Text(
                           UIString.appName,
                           style: TextStyle(fontSize: 25),
@@ -203,7 +203,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   maxLines: 1,
                                   controller: _usernameText,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return UIString.usernameRequired;
                                     } else {
                                       return null;
@@ -224,7 +224,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   controller: _companyCodeText,
                                   focusNode: focusCompanyCode,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return UIString.companyCodeRequired;
                                     } else {
                                       return null;
@@ -245,7 +245,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   controller: _hostText,
                                   focusNode: focusHost,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return UIString.hostRequired;
                                     } else {
                                       return null;
@@ -285,7 +285,7 @@ class _RegisterPageState extends State<RegisterPage> {
       children: <Widget>[
         ElevatedButton(
           onPressed: () async {
-            if (formRegisterKey.currentState.validate()) {
+            if (formRegisterKey.currentState!.validate()) {
               FocusScope.of(context).requestFocus(FocusNode());
               await callAPI();
             }

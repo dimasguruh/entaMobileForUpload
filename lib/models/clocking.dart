@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ClockingHistoryModel {
-  DateTime date;
-  String time, type, status, imageUrl, note, group;
-  double latitude, longitude;
+  late DateTime date;
+  String? time, type, status, imageUrl, note, group;
+  double? latitude, longitude;
   String queryString = '';
-  Color statusColor;
+  Color? statusColor;
 
   ClockingHistoryModel.fromList(List<dynamic> map) {
     date = DateTime.parse(map[0]);

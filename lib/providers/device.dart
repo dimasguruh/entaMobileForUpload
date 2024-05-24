@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:enta_mobile/models/auth.dart';
 import 'package:enta_mobile/models/general.dart';
 import 'package:enta_mobile/models/office.dart';
@@ -17,21 +18,21 @@ import '../utils/url.dart';
 
 class DeviceState with ChangeNotifier {
   DeviceState();
-  PermissionStatus permissionCamera, permissionStorage, permissionLocation;
-  String server, deviceId;
-  int validationCode = 0;
-  int leaveGroupCode = 0;
-  int shiftScheduleCode = 0;
-  int leaveBalanceCode = 0;
-  int codeOvertimeHistory = 0;
-  int codeLeaveHistory = 0;
-  int codeClockingHistory = 0;
-  int employeeId;
-  double leaveBalance;
+  PermissionStatus? permissionCamera, permissionStorage, permissionLocation;
+  String? server, deviceId;
+  int? validationCode = 0;
+  int? leaveGroupCode = 0;
+  int? shiftScheduleCode = 0;
+  int? leaveBalanceCode = 0;
+  int? codeOvertimeHistory = 0;
+  int? codeLeaveHistory = 0;
+  int? codeClockingHistory = 0;
+  int? employeeId;
+  double? leaveBalance;
 
-  String authToken, employeeName = '-';
-  AuthModel myAuth;
-  List<OfficeModel> officeList = [];
+  String? authToken, employeeName = '-';
+  AuthModel? myAuth;
+  List<OfficeModel>? officeList = [];
   List<GeneralModel> leaveTypeGroup = [];
   List<ShiftScheduleModel> shiftSchedule = [];
   List<OvertimeHistoryModel> overtimeHistoryList = [];
@@ -59,10 +60,10 @@ class DeviceState with ChangeNotifier {
   String msgOvertimeHistory = '';
   String msgLeaveHistory = '';
   String msgClockingHistory = '';
-  double myLat, myLong;
+  double? myLat, myLong;
   int otMaxMinutes = 999999; // by default
 
-  Future<void> requestPermission({Permission hardware}) async {
+  Future<void> requestPermission({required Permission hardware}) async {
     PermissionStatus resultPermission = await hardware.request();
     if (hardware == Permission.camera) {
       permissionCamera = resultPermission;
@@ -74,42 +75,40 @@ class DeviceState with ChangeNotifier {
     notifyListeners();
   }
 
-  void setDevicedId({String id}) {
+  void setDevicedId({String? id}) {
     deviceId = id;
     notifyListeners();
   }
 
-  void setMyAuth({AuthModel data}) {
+  void setMyAuth({AuthModel? data}) {
     myAuth = data;
     notifyListeners();
   }
 
-  void setMyOffice({List<OfficeModel> data}) {
+  void setMyOffice({List<OfficeModel>? data}) {
     officeList = data;
     notifyListeners();
   }
 
-  void setMyLocation({double latitude, double longitude}) {
+  void setMyLocation({double? latitude, double? longitude}) {
     myLat = latitude;
     myLong = longitude;
     notifyListeners();
   }
 
-  String getInfoSchedule({int employeeId, DateTime date}) {
-    var x = shiftSchedule.firstWhere(
-        (e) => e.date == date && e.employeeId == employeeId,
-        orElse: () => null);
+  String? getInfoSchedule({int? employeeId, DateTime? date}) {
+    var x = shiftSchedule.firstWhereOrNull(
+        (e) => e.date == date && e.employeeId == employeeId);
     if (x != null) {
-      return "${x.code} (${DateFormat('HH:mm', 'id').format(x.dateTimeIn)} - ${DateFormat('HH:mm', 'id').format(x.dateTimeOut)})";
+      return "${x.code} (${DateFormat('HH:mm', 'id').format(x.dateTimeIn!)} - ${DateFormat('HH:mm', 'id').format(x.dateTimeOut!)})";
     } else {
       return null;
     }
   }
 
-  ShiftScheduleModel getDetailSchedule({int employeeId, DateTime date}) {
-    var x = shiftSchedule.firstWhere(
-        (e) => e.date == date && e.employeeId == employeeId,
-        orElse: () => null);
+  ShiftScheduleModel? getDetailSchedule({int? employeeId, DateTime? date}) {
+    var x = shiftSchedule.firstWhereOrNull(
+        (e) => e.date == date && e.employeeId == employeeId);
     if (x != null) {
       return x;
     } else {
@@ -119,9 +118,9 @@ class DeviceState with ChangeNotifier {
 
   Future<ResponseAPI> actionCallAPI({
     bool isRefresh = false,
-    String method,
-    Uri uri,
-    String prefix,
+    String? method,
+    required Uri uri,
+    required String prefix,
     dynamic formData,
   }) async {
     if (uri.path == prefix + UIUrl.checkToken) {
@@ -161,13 +160,13 @@ class DeviceState with ChangeNotifier {
       if (result.success) {
         employeeId = int.parse(result.data[0].toString());
         employeeName = result.data[1].toString();
-        officeList.clear();
+        officeList!.clear();
         extFile.clear();
         workFromStatusList.clear();
         workFromStatusLabels.clear();
         if (result.data[2] != null) {
           for (var company in result.data[2]) {
-            officeList.add(OfficeModel.fromList(company));
+            officeList!.add(OfficeModel.fromList(company));
           }
         }
         maxSizeFile = int.parse(result.data[3].toString()) * 1024;

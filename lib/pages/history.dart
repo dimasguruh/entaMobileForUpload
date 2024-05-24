@@ -16,18 +16,18 @@ import '../components/loading.dart';
 
 class HistoryPage extends StatefulWidget {
   static const routeName = '/history';
-  const HistoryPage({Key key}) : super(key: key);
+  const HistoryPage({Key? key}) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  int code = 0;
+  int? code = 0;
   bool loading = true;
   String msg = "";
   List<HistoryModel> historyList = [];
-  DeviceState deviceState;
+  late DeviceState deviceState;
   @override
   void initState() {
     super.initState();
@@ -48,7 +48,7 @@ class _HistoryPageState extends State<HistoryPage> {
     setState(() {});
 
     ResponseAPI result = await UIFunction.callAPIDIO(
-        url: deviceState.myAuth.host + UIUrl.history,
+        url: deviceState.myAuth!.host! + UIUrl.history,
         method: 'POST',
         formData: {});
     code = result.code;
@@ -139,26 +139,26 @@ class _HistoryPageState extends State<HistoryPage> {
                   size: 15,
                 ),
                 title: Text(
-                  historyList[i].date,
+                  historyList[i].date!,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      historyList[i].time,
+                      historyList[i].time!,
                       style: TextStyle(
                           fontSize: Theme.of(context)
                               .primaryTextTheme
-                              .subtitle2
+                              .subtitle2!
                               .fontSize),
                     ),
                     Text(
-                      historyList[i].status,
+                      historyList[i].status!,
                       style: TextStyle(
                           fontSize: Theme.of(context)
                               .primaryTextTheme
-                              .subtitle2
+                              .subtitle2!
                               .fontSize),
                     )
                   ],

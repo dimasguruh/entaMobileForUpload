@@ -1,6 +1,6 @@
 class OfficeModel {
-  double latitude, longitude;
-  String name;
+  double? latitude, longitude;
+  String? name;
 
   OfficeModel({this.name, this.latitude, this.longitude});
 

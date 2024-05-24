@@ -55,8 +55,8 @@ enum StepperType {
 class ControlsDetails {
   /// Creates a set of details describing the Stepper.
   const ControlsDetails({
-    @required this.currentStep,
-    @required this.stepIndex,
+    required this.currentStep,
+    required this.stepIndex,
     this.onStepCancel,
     this.onStepContinue,
   });
@@ -75,12 +75,12 @@ class ControlsDetails {
   /// The callback called when the 'continue' button is tapped.
   ///
   /// If null, the 'continue' button will be disabled.
-  final VoidCallback onStepContinue;
+  final VoidCallback? onStepContinue;
 
   /// The callback called when the 'cancel' button is tapped.
   ///
   /// If null, the 'cancel' button will be disabled.
-  final VoidCallback onStepCancel;
+  final VoidCallback? onStepCancel;
 
   /// True if the indicated step is also the current active step. If the user has
   /// just activated the transition to a new step, some [Stepper.type] values will
@@ -128,9 +128,9 @@ class Step {
   ///
   /// The [title], [content], and [state] arguments must not be null.
   const Step({
-    @required this.title,
+    required this.title,
     this.subtitle,
-    @required this.content,
+    required this.content,
     this.state = StepState.indexed,
     this.isActive = false,
   })  : assert(title != null),
@@ -144,7 +144,7 @@ class Step {
   /// font size. It typically gives more details that complement the title.
   ///
   /// If null, the subtitle is not shown.
-  final Widget subtitle;
+  final Widget? subtitle;
 
   /// The content of the step that appears below the [title] and [subtitle].
   ///
@@ -188,8 +188,8 @@ class Stepper extends StatefulWidget {
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
   const Stepper({
-    Key key,
-    @required this.steps,
+    Key? key,
+    required this.steps,
     this.physics,
     this.type = StepperType.vertical,
     this.currentStep = 0,
@@ -217,7 +217,7 @@ class Stepper extends StatefulWidget {
   ///
   /// If the stepper is contained within another scrollable it
   /// can be helpful to set this property to [ClampingScrollPhysics].
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   /// The type of stepper that determines the layout. In the case of
   /// [StepperType.horizontal], the content of the current step is displayed
@@ -230,17 +230,17 @@ class Stepper extends StatefulWidget {
 
   /// The callback called when a step is tapped, with its index passed as
   /// an argument.
-  final ValueChanged<int> onStepTapped;
+  final ValueChanged<int>? onStepTapped;
 
   /// The callback called when the 'continue' button is tapped.
   ///
   /// If null, the 'continue' button will be disabled.
-  final VoidCallback onStepContinue;
+  final VoidCallback? onStepContinue;
 
   /// The callback called when the 'cancel' button is tapped.
   ///
   /// If null, the 'cancel' button will be disabled.
-  final VoidCallback onStepCancel;
+  final VoidCallback? onStepCancel;
 
   /// The callback for creating custom controls.
   ///
@@ -294,20 +294,20 @@ class Stepper extends StatefulWidget {
   /// ```
   /// ** See code in examples/api/lib/material/stepper/stepper.controls_builder.0.dart **
   /// {@end-tool}
-  final ControlsWidgetBuilder controlsBuilder;
+  final ControlsWidgetBuilder? controlsBuilder;
 
   /// The elevation of this stepper's [Material] when [type] is [StepperType.horizontal].
-  final double elevation;
+  final double? elevation;
 
   /// custom margin on vertical stepper.
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   @override
   State<Stepper> createState() => _StepperState();
 }
 
 class _StepperState extends State<Stepper> with TickerProviderStateMixin {
-  List<GlobalKey> _keys;
+  late List<GlobalKey> _keys;
   final Map<int, StepState> _oldStates = <int, StepState>{};
 
   @override
@@ -360,7 +360,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
   // ignore: missing_return
   Widget _buildCircleChild(int index, bool oldState) {
     final StepState state =
-        oldState ? _oldStates[index] : widget.steps[index].state;
+        oldState ? _oldStates[index]! : widget.steps[index].state;
     final bool isDarkActive = _isDark() && widget.steps[index].isActive;
     assert(state != null);
     switch (state) {
@@ -496,7 +496,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
 
   Widget _buildVerticalControls(int stepIndex) {
     if (widget.controlsBuilder != null) {
-      return widget.controlsBuilder(
+      return widget.controlsBuilder!(
         context,
         ControlsDetails(
           currentStep: widget.currentStep,
@@ -507,7 +507,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
       );
     }
 
-    Color cancelColor;
+    Color? cancelColor;
     switch (Theme.of(context).brightness) {
       case Brightness.light:
         cancelColor = Colors.black54;
@@ -538,7 +538,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
             TextButton(
               onPressed: widget.onStepContinue,
               style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                foregroundColor: MaterialStateProperty.resolveWith<Color?>(
                     (Set<MaterialState> states) {
                   return states.contains(MaterialState.disabled)
                       ? null
@@ -546,7 +546,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
                           ? colorScheme.onSurface
                           : colorScheme.onPrimary);
                 }),
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                backgroundColor: MaterialStateProperty.resolveWith<Color?>(
                     (Set<MaterialState> states) {
                   return _isDark() || states.contains(MaterialState.disabled)
                       ? null
@@ -577,7 +577,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
   }
 
   // ignore: missing_return
-  TextStyle _titleStyle(int index) {
+  TextStyle? _titleStyle(int index) {
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
@@ -593,18 +593,18 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
         return textTheme.bodyText1;
 
       case StepState.disabled:
-        return textTheme.bodyText1.copyWith(
+        return textTheme.bodyText1!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.bodyText1.copyWith(
+        return textTheme.bodyText1!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
   }
 
   // ignore: missing_return
-  TextStyle _subtitleStyle(int index) {
+  TextStyle? _subtitleStyle(int index) {
     final ThemeData themeData = Theme.of(context);
     final TextTheme textTheme = themeData.textTheme;
 
@@ -619,11 +619,11 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
       case StepState.info:
         return textTheme.caption;
       case StepState.disabled:
-        return textTheme.caption.copyWith(
+        return textTheme.caption!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.caption.copyWith(
+        return textTheme.caption!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -635,7 +635,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         AnimatedDefaultTextStyle(
-          style: _titleStyle(index),
+          style: _titleStyle(index)!,
           duration: kThemeAnimationDuration,
           curve: Curves.fastOutSlowIn,
           child: widget.steps[index].title,
@@ -644,10 +644,10 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
           Container(
             margin: const EdgeInsets.only(top: 2.0),
             child: AnimatedDefaultTextStyle(
-              style: _subtitleStyle(index),
+              style: _subtitleStyle(index)!,
               duration: kThemeAnimationDuration,
               curve: Curves.fastOutSlowIn,
-              child: widget.steps[index].subtitle,
+              child: widget.steps[index].subtitle!,
             ),
           ),
       ],
@@ -741,7 +741,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
                         // In the vertical case we need to scroll to the newly tapped
                         // step.
                         Scrollable.ensureVisible(
-                          _keys[i].currentContext,
+                          _keys[i].currentContext!,
                           curve: Curves.fastOutSlowIn,
                           duration: kThemeAnimationDuration,
                         );
@@ -867,7 +867,7 @@ class _StepperState extends State<Stepper> with TickerProviderStateMixin {
 // top vertex the middle of its top.
 class _TrianglePainter extends CustomPainter {
   _TrianglePainter({
-    @required this.color,
+    required this.color,
   });
 
   final Color color;

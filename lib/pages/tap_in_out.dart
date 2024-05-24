@@ -21,22 +21,22 @@ import '../utils/strings.dart';
 
 class TapInOutPage extends StatefulWidget {
   static const routeName = '/tap-in-out';
-  final String url;
-  final String title;
-  const TapInOutPage({Key key, this.title, this.url}) : super(key: key);
+  final String? url;
+  final String? title;
+  const TapInOutPage({Key? key, this.title, this.url}) : super(key: key);
 
   @override
   State<TapInOutPage> createState() => _TapInOutPageState();
 }
 
 class _TapInOutPageState extends State<TapInOutPage> {
-  DeviceState deviceState;
+  late DeviceState deviceState;
   Completer<GoogleMapController> mapController = Completer();
   final TextEditingController _noteText = TextEditingController();
   Location location = Location();
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  File _imageFile;
-  double heightScreen, widthScreen;
+  File? _imageFile;
+  double? heightScreen, widthScreen;
   bool isLoading = false;
   bool isLoadingMap = false;
   bool isMapReady = false;
@@ -44,8 +44,8 @@ class _TapInOutPageState extends State<TapInOutPage> {
   double opacitySubmit = 0.5;
   String infoJeff = "jefri";
   MarkerId markerId = const MarkerId("my_position_marker");
-  String _imageBase64, _latitude, _longitude;
-  double latitude, longitude;
+  String? _imageBase64, _latitude, _longitude;
+  double? latitude, longitude;
   var _planText, _secretKey, _parameters, responseAPI;
 
   @override
@@ -74,8 +74,8 @@ class _TapInOutPageState extends State<TapInOutPage> {
       Marker marker = Marker(
         markerId: markerId,
         position: LatLng(
-          latitude,
-          longitude,
+          latitude!,
+          longitude!,
         ),
         infoWindow: const InfoWindow(title: "My Position", snippet: '*'),
         onTap: () {
@@ -85,7 +85,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
 
       goToNewPosition(
         newPosition: CameraPosition(
-          target: LatLng(latitude, longitude),
+          target: LatLng(latitude!, longitude!),
           zoom: 17,
         ),
       );
@@ -95,7 +95,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
     }
   }
 
-  Future<void> goToNewPosition({CameraPosition newPosition}) async {
+  Future<void> goToNewPosition({required CameraPosition newPosition}) async {
     final GoogleMapController controller = await mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
@@ -104,8 +104,8 @@ class _TapInOutPageState extends State<TapInOutPage> {
     var image = await ImagePicker().pickImage(
         source: source,
         imageQuality: 50,
-        maxHeight: heightScreen * 0.4,
-        maxWidth: widthScreen * 0.4);
+        maxHeight: heightScreen! * 0.4,
+        maxWidth: widthScreen! * 0.4);
     if (image != null) {
       setState(() {
         _imageFile = File(image.path);
@@ -148,31 +148,31 @@ class _TapInOutPageState extends State<TapInOutPage> {
 
   Future<void> callAPI() async {
     _planText = "";
-    _imageBase64 = await UIFunction.encodeImageBase64(_imageFile);
-    _planText = deviceState.myAuth.username +
-        _longitude +
-        _latitude +
-        _imageBase64 +
+    _imageBase64 = await (UIFunction.encodeImageBase64(_imageFile!) as FutureOr<String?>);
+    _planText = deviceState.myAuth!.username! +
+        _longitude! +
+        _latitude! +
+        _imageBase64! +
         _noteText.text +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId +
-        deviceState.myAuth.companyCode +
-        deviceState.deviceId;
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId! +
+        deviceState.myAuth!.companyCode! +
+        deviceState.deviceId!;
     _secretKey = UIFunction.encodeSha1(_planText);
     _parameters = json.encode([
-      deviceState.myAuth.username,
+      deviceState.myAuth!.username,
       _longitude,
       _latitude,
       _imageBase64,
       _noteText.text,
-      deviceState.myAuth.companyCode,
+      deviceState.myAuth!.companyCode,
       deviceState.deviceId,
       _secretKey
     ]);
     UIFunction.showDialogLoadingBlank(context: context);
     ResponseAPI result = await UIFunction.callAPIDIO(
       method: 'POST',
-      url: deviceState.myAuth.host + widget.url,
+      url: deviceState.myAuth!.host! + widget.url!,
       formData: _parameters,
     );
     Map<String, dynamic> result2 = <String, dynamic>{};
@@ -227,7 +227,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.title,
+          widget.title!,
         ),
         actions: <Widget>[
           IconButton(
@@ -290,7 +290,7 @@ class _TapInOutPageState extends State<TapInOutPage> {
         padding: const EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.grey[200]),
+          border: Border.all(color: Colors.grey[200]!),
         ),
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -311,15 +311,15 @@ class _TapInOutPageState extends State<TapInOutPage> {
     if (_imageFile != null) {
       return Padding(
         padding:
-            EdgeInsets.only(top: widthScreen * 0.05, left: widthScreen * 0.05),
+            EdgeInsets.only(top: widthScreen! * 0.05, left: widthScreen! * 0.05),
         child: Container(
           decoration: ShapeDecoration(
               color: Colors.white,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(5))),
-              image: DecorationImage(image: FileImage(_imageFile))),
-          height: widthScreen * 0.28,
-          width: widthScreen * 0.2,
+              image: DecorationImage(image: FileImage(_imageFile!))),
+          height: widthScreen! * 0.28,
+          width: widthScreen! * 0.2,
         ),
       );
     } else {

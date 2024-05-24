@@ -7,7 +7,7 @@ import '../avatar.dart';
 
 class EmployeeModal extends StatefulWidget {
   final int type;
-  const EmployeeModal({Key key, @required this.type}) : super(key: key);
+  const EmployeeModal({Key? key, required this.type}) : super(key: key);
 
   @override
   State<EmployeeModal> createState() => _EmployeeModalState();
@@ -25,8 +25,8 @@ class _EmployeeModalState extends State<EmployeeModal> {
     super.dispose();
   }
 
-  void onClick({int i}) {
-    UIData.dummyEmployee[i].isSelected = !UIData.dummyEmployee[i].isSelected;
+  void onClick({required int i}) {
+    UIData.dummyEmployee[i].isSelected = !UIData.dummyEmployee[i].isSelected!;
     var x = UIData.dummyEmployee.where((element) => element.isSelected == true);
     numSelected = x.length;
 
@@ -56,7 +56,7 @@ class _EmployeeModalState extends State<EmployeeModal> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize:
-                        Theme.of(context).primaryTextTheme.subtitle1.fontSize,
+                        Theme.of(context).primaryTextTheme.subtitle1!.fontSize,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
@@ -103,24 +103,24 @@ class _EmployeeModalState extends State<EmployeeModal> {
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle1
+                            .subtitle1!
                             .fontSize,
                       ),
                     ),
                     subtitle: Text(
-                      UIData.dummyEmployee[i].name,
+                      UIData.dummyEmployee[i].name!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: Theme.of(context)
                             .primaryTextTheme
-                            .subtitle2
+                            .subtitle2!
                             .fontSize,
                       ),
                     ),
                     trailing: Checkbox(
                       value: UIData.dummyEmployee[i].isSelected ?? false,
-                      onChanged: (bool value) {
+                      onChanged: (bool? value) {
                         onClick(i: i);
                       },
                     ),

@@ -4,9 +4,9 @@ class ErrorGetData extends StatefulWidget {
   final String title;
   final void Function() callBack;
   const ErrorGetData({
-    Key key,
-    this.title,
-    this.callBack,
+    Key? key,
+    required this.title,
+    required this.callBack,
   }) : super(key: key);
 
   @override
@@ -39,7 +39,7 @@ class _ErrorGetDataState extends State<ErrorGetData> {
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: Theme.of(context).primaryColor.withAlpha(50),
+                primary: Theme.of(context).primaryColor.withAlpha(50),
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(20),
@@ -55,7 +55,7 @@ class _ErrorGetDataState extends State<ErrorGetData> {
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize:
-                      Theme.of(context).primaryTextTheme.subtitle2.fontSize,
+                      Theme.of(context).primaryTextTheme.subtitle2!.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
